@@ -7,21 +7,11 @@
 
 # Define the list of environmental variables that we need to populate during deployment.
 variables=(
-	LIS_FTP_USERNAME
-	LIS_FTP_PASSWORD
 	PDO_DSN
 	PDO_SERVER
 	PDO_USERNAME
 	PDO_PASSWORD
-	GMAPS_KEY
-	YAHOO_KEY
-	OPENSTATES_KEY
-	OPENVA_KEY
-	VA_DECODED_KEY
-	MAPBOX_TOKEN
 	MEMCACHED_SERVER
-	PUSHOVER_KEY
-	SLACK_WEBHOOK
 )
 
 # Iterate over the variables and make sure that they're all populated.
