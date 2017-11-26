@@ -19,4 +19,3 @@ hooks:
     - location: deploy/predeploy.sh
   AfterInstall:
     - location: deploy/postdeploy.sh
-    - location: php deploy/log_deployment.php
