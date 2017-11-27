@@ -26,7 +26,7 @@ require_once 'functions.inc.php';
 
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific page.
-@connect_to_db();
+connect_to_db();
 
 # LOCALIZE VARIABLES
 $year = mysql_escape_string($_REQUEST['year']);
@@ -105,5 +105,3 @@ if (isset($callback))
 {
 	echo ');';
 }
-
-?>
