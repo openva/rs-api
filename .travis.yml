@@ -7,8 +7,8 @@ notifications:
 before_install:
 # Get includes from the website's repo, per https://github.com/openva/rs-machine/issues/13
 - git clone https://github.com/openva/richmondsunlight.com.git
-- mkdir includes
-- cp richmondsunlight.com/htdocs/includes/*.php includes/
+- mkdir htdocs/includes
+- cp richmondsunlight.com/htdocs/includes/*.php htdocs/includes/
 - rm -Rf richmondsunlight.com
 script:
 - find . -name "*.php" -print0 |xargs -0 -n1 -P8 php -l
