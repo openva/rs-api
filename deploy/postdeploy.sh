@@ -2,3 +2,4 @@
 
 # Set permissions properly, since appspec.yml gets this wrong.
 chown -R ricsun:web /vol/www/api.richmondsunlight.com/
+chmod -R g+w /vol/www/api.richmondsunlight.com/
