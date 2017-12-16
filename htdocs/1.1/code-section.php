@@ -63,7 +63,7 @@ $bill = mysql_fetch_array($result, MYSQL_ASSOC);
 # and indexed arrays.
 while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
 {
-	$bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
+	$bill['url'] = 'https://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
 	$bill['number'] = strtoupper($bill['number']);
 	$bills[] = array_map('stripslashes', $bill);
 }

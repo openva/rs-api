@@ -59,13 +59,13 @@ if (mysql_num_rows($result) == 0)
 # Build up a list of all video clips
 while ($clip = mysql_fetch_array($result, MYSQL_ASSOC))
 {
-	$clip['bill_url'] = 'http://www.richmondsunlight.com/bill/' . $clip['year'] . '/'
+	$clip['bill_url'] = 'https://www.richmondsunlight.com/bill/' . $clip['year'] . '/'
 		. $clip['bill_number'] . '/';
 	$clip['bill_number'] = strtoupper($clip['bill_number']);
-	$clip['screenshot'] = str_replace('/video/', 'http://s3.amazonaws.com/video.richmondsunlight.com/', $clip['screenshot']);
+	$clip['screenshot'] = str_replace('/video/', 'https://s3.amazonaws.com/video.richmondsunlight.com/', $clip['screenshot']);
 	if (strpos($clip['video_url'], 'archive.org') === FALSE)
 	{
-		$clip['video_url'] = 'http://www.richmondsunlight.com' . $clip['video_url'];
+		$clip['video_url'] = 'https://www.richmondsunlight.com' . $clip['video_url'];
 	}
 	$clips[] = array_map('stripslashes', $clip);
 }
