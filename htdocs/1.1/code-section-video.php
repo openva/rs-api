@@ -21,7 +21,8 @@ require_once 'functions.inc.php';
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific
 # page.
-@connect_to_db();
+$database = new Database;
+$database->connect_old();
 
 # LOCALIZE VARIABLES
 $section = mysql_escape_string(urldecode($_REQUEST['section']));
@@ -126,5 +127,3 @@ if (isset($callback))
 {
 	echo ');';
 }
-
-?>

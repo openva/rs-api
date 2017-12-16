@@ -20,10 +20,10 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
-
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific page.
-@connect_to_db();
+$database = new Database;
+$database->connect_old();
 
 # LOCALIZE VARIABLES
 $year = mysql_escape_string($_REQUEST['year']);
@@ -49,7 +49,7 @@ $result = mysql_query($sql);
 if (mysql_num_rows($result) == 0)
 {
 	// send this as a JSON-formatted error!
-	die('Richmond Sunlight has no record of bills for '.$year.'.');
+	die('Richmond Sunlight has no record of bills for ' . $year . '.');
 }
 
 $bills = array();
@@ -88,5 +88,3 @@ if (isset($callback))
 {
 	echo ');';
 }
-
-?>

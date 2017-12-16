@@ -22,10 +22,6 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
-# DECLARATIVE FUNCTIONS
-# Run those functions that are necessary prior to loading this specific page.
-connect_to_db();
-
 # LOCALIZE VARIABLES
 $year = mysql_escape_string($_REQUEST['year']);
 $bill = mysql_escape_string($_REQUEST['bill']);
