@@ -66,7 +66,7 @@ if (mysql_num_rows($result) > 0)
 		 * Generate the URL for this legislator on the site.
 		 */
 		$legislator['site_url'] = 'https://www.richmondsunlight.com/legislator/'
-			. $legislator['shortname'];
+			. $legislator['shortname'] . '/';
 
 		/*
 		 * We publicly call the shortname the "ID," so swap them out.
