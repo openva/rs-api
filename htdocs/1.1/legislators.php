@@ -48,8 +48,16 @@ $sql = 'SELECT representatives.id, representatives.shortname, representatives.na
 		districts.number AS district
 		FROM representatives
 		LEFT JOIN districts
-			ON representatives.district_id=districts.id
-		ORDER BY representatives.name ASC';
+			ON representatives.district_id=districts.id ';
+if (isset($year))
+{
+	$sql .= 'WHERE representatives.date_started <= ' . $year . '-01-01
+		AND
+			(representatives.date_ended >= ' . $year . '-01-01
+			OR
+			representatives.date_ended IS NULL';
+}
+$sql .= 'ORDER BY representatives.name ASC';
 
 $result = mysql_query($sql);
 if (mysql_num_rows($result) > 0)
