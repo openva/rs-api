@@ -28,6 +28,18 @@ $database = new Database;
 $database->connect_old();
 
 /*
+ * LOCALIZE VARIABLES
+ */
+if ( isset($_GET['year']) && strlen($_GET['year']) == 4 && is_numeric($_GET['year']) )
+{
+	$year = $_GET['year'];
+}
+if ( isset($_GET['callback']) && strlen($_GET['callback']) < 32 )
+{
+	$callback = $_GET['callback'];
+}
+
+/*
  * Select basic legislator data from the database.
  */
 $sql = 'SELECT representatives.id, representatives.shortname, representatives.name,
