@@ -2,14 +2,14 @@
 
 ###
 # Create Legislator JSON
-# 
+#
 # PURPOSE
 # Accepts the shortname of a given legislator and spits out a JSON file providing
 # the basic specs on that legislator.
-# 
+#
 # NOTES
 # This is not intended to be viewed. It just spits out an JSON file and that's that.
-# 
+#
 ###
 
 # INCLUDES
@@ -49,10 +49,10 @@ $sql = 'SELECT representatives.id, representatives.shortname, representatives.na
 $result = @mysql_query($sql);
 if (@mysql_num_rows($result) > 0)
 {
-	
+
 	$legislator = @mysql_fetch_array($result, MYSQL_ASSOC);
 	$legislator = array_map('stripslashes', $legislator);
-	
+
 	# Eliminate any useless data.
 	if ($legislator['birthday'] == '0000-00-00')
 	{
@@ -103,7 +103,7 @@ if (@mysql_num_rows($result) > 0)
 			$legislator['committees'][] = $committee;
 		}
 	}
-	
+
 	# Select the bill data from the database.
 	$sql = 'SELECT bills.number, sessions.year, bills.catch_line AS title, bills.date_introduced,
 			bills.outcome

@@ -2,14 +2,14 @@
 
 ###
 # Create Photosynthesis JSON
-# 
+#
 # PURPOSE
 # Accepts a Photosynthesis portfolio hash, and responds with a listing of bills contained within
 # that portfolio, along with any associated comments.
-# 
+#
 # NOTES
 # This is not intended to be viewed. It just spits out a JSON file and that's that.
-# 
+#
 ###
 
 # INCLUDES

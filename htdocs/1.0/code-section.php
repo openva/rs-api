@@ -2,13 +2,13 @@
 
 ###
 # Create Bill JSON
-# 
+#
 # PURPOSE
 # Accepts a section of code, and responds with a list of bills that addressed that section.
 #
 # NOTES
 # This is not intended to be viewed. It just spits out a JSON file and that's that.
-# 
+#
 ###
 
 # INCLUDES
@@ -52,7 +52,7 @@ if (mysql_num_rows($result) == 0)
 			'details' => 'No bills were found that cite section ' . $section . '.'));
 	echo json_encode($message);
 	exit;
-	
+
 }
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.

@@ -2,14 +2,14 @@
 
 ###
 # Create Legislator JSON
-# 
+#
 # PURPOSE
 # Accepts the shortname of a given legislator and spits out a JSON file providing
 # the basic specs on that legislator.
-# 
+#
 # NOTES
 # This is not intended to be viewed. It just spits out an JSON file and that's that.
-# 
+#
 ###
 
 /*
@@ -23,7 +23,7 @@ require_once 'functions.inc.php';
 /*
  * DECLARATIVE FUNCTIONS
  * Run those functions that are necessary prior to loading this specific page.
- */ 
+ */
 $database = new Database;
 $database->connect_old();
 
@@ -69,10 +69,10 @@ if (mysql_num_rows($result) > 0)
 	{
 
 		$legislator = array_map('stripslashes', $legislator);
-		
+
 		/*
 		 * Eliminate any useless data.
-		 */  
+		 */
 		if ($legislator['date_started'] == '0000-00-00')
 		{
 			unset($legislator['date_started']);

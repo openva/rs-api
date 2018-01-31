@@ -2,16 +2,16 @@
 
 ###
 # Create Bill Listing JSON
-# 
+#
 # PURPOSE
 # Accepts a year and spits out a JSON file providing a list of the bills introduced in that year.
-# 
+#
 # NOTES
 # This is not intended to be viewed. It just spits out an JSON file and that's that.
-# 
+#
 # TODO
 # * Cache the output.
-# 
+#
 ###
 
 # INCLUDES
@@ -63,11 +63,11 @@ while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
 	# Assign the patron data to a subelement.
 	$bill['patron']['name'] = $bill['patron'];
 	$bill['patron']['id'] = $bill['patron_id'];
-	
+
 	# Eliminate the fields we no longer need.
 	unset($bill['patron']);
 	unset($bill['patron_id']);
-	
+
 	$bills[] = $bill;
 }
 

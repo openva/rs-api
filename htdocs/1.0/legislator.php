@@ -2,14 +2,14 @@
 
 ###
 # Create Legislator JSON
-# 
+#
 # PURPOSE
 # Accepts the shortname of a given legislator and spits out a JSON file providing
 # the basic specs on that legislator.
-# 
+#
 # NOTES
 # This is not intended to be viewed. It just spits out an JSON file and that's that.
-# 
+#
 ###
 
 # INCLUDES
@@ -51,7 +51,7 @@ if (mysql_num_rows($result) == 0)
 	json_error('Richmond Sunlight has no record of legislator ' . $shortname . '.');
 	exit();
 }
-	
+
 $legislator = @mysql_fetch_array($result, MYSQL_ASSOC);
 $legislator = array_map('stripslashes', $legislator);
 

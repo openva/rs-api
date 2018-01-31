@@ -2,13 +2,13 @@
 
 ###
 # Code Section Video JSON
-# 
+#
 # PURPOSE
 # Accepts a section of code, and responds with a listing of video clips that addressed that section.
-# 
+#
 # NOTES
 # This is not intended to be viewed. It just spits out a JSON file and that's that.
-# 
+#
 ###
 
 # INCLUDES
@@ -82,7 +82,7 @@ foreach ($clips as $key => &$clip)
 
 		if ($candidate->video_url == $clip->video_url)
 		{
-			
+
 			# If there is another clip that starts earlier than or when this one does, and ends
 			# later than or when this one does, than delete this one.
 			if (
@@ -93,13 +93,13 @@ foreach ($clips as $key => &$clip)
 			{
 				unset($clips[$key]);
 			}
-			
+
 			break(2);
-			
+
 		}
-		
+
 	}
-	
+
 }
 
 /*

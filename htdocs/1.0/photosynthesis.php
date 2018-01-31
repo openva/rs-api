@@ -2,14 +2,14 @@
 
 ###
 # Create Photosynthesis JSON
-# 
+#
 # PURPOSE
 # Accepts a Photosynthesis portfolio hash, and responds with a listing of bills contained within
 # that portfolio, along with any associated comments.
-# 
+#
 # NOTES
 # This is not intended to be viewed. It just spits out a JSON file and that's that.
-# 
+#
 ###
 
 # INCLUDES
@@ -50,7 +50,7 @@ $sql = 'SELECT bills.number, sessions.year, dashboard_bills.notes
 $result = mysql_query($sql);
 if (mysql_num_rows($result) == 0)
 {
-	
+
 	header('HTTP/1.0 404 Not Found');
 	header('Content-type: application/json');
 	$message = array('error' =>
@@ -58,7 +58,7 @@ if (mysql_num_rows($result) == 0)
 			'details' => 'No bills were found in portfolio '.$hash.'.'));
 	echo json_encode($message);
 	exit;
-	
+
 }
 
 # Build up a listing of all bills.
