@@ -27,7 +27,7 @@ require_once 'functions.inc.php';
 $shortname = @mysql_real_escape_string($_GET['shortname']);
 if (isset($_REQUEST['callback']))
 {
-	$callback = $_REQUEST['callback'];
+    $callback = $_REQUEST['callback'];
 }
 
 # Select general legislator data from the database.
@@ -48,8 +48,8 @@ $sql = 'SELECT representatives.id, representatives.shortname, representatives.na
 $result = @mysql_query($sql);
 if (mysql_num_rows($result) == 0)
 {
-	json_error('Richmond Sunlight has no record of legislator ' . $shortname . '.');
-	exit();
+    json_error('Richmond Sunlight has no record of legislator ' . $shortname . '.');
+    exit();
 }
 
 $legislator = @mysql_fetch_array($result, MYSQL_ASSOC);
@@ -58,31 +58,31 @@ $legislator = array_map('stripslashes', $legislator);
 # Eliminate any useless data.
 if ($legislator['birthday'] == '0000-00-00')
 {
-	unset($legislator['birthday']);
+    unset($legislator['birthday']);
 }
 if ($legislator['date_started'] == '0000-00-00')
 {
-	unset($legislator['date_started']);
+    unset($legislator['date_started']);
 }
 if ($legislator['date_ended'] == '0000-00-00')
 {
-	unset($legislator['date_ended']);
+    unset($legislator['date_ended']);
 }
 if (empty($legislator['phone_district']))
 {
-	unset($legislator['phone_district']);
+    unset($legislator['phone_district']);
 }
 if (empty($legislator['phone_richmond']))
 {
-	unset($legislator['phone_richmond']);
+    unset($legislator['phone_richmond']);
 }
 if (empty($legislator['address_district']))
 {
-	unset($legislator['address_district']);
+    unset($legislator['address_district']);
 }
 if (empty($legislator['address_richmond']))
 {
-	unset($legislator['address_richmond']);
+    unset($legislator['address_richmond']);
 }
 
 # Select the committee data from the database.
@@ -95,15 +95,15 @@ $sql = 'SELECT committees.name, committee_members.position
 $result = mysql_query($sql);
 if (mysql_num_rows($result) > 0)
 {
-	while ($committee = mysql_fetch_array($result, MYSQL_ASSOC))
-	{
-		$committee = array_map('stripslashes', $committee);
-		if (empty($committee['position']))
-		{
-			$committee['position'] = 'member';
-		}
-		$legislator['committees'][] = $committee;
-	}
+    while ($committee = mysql_fetch_array($result, MYSQL_ASSOC))
+    {
+        $committee = array_map('stripslashes', $committee);
+        if (empty($committee['position']))
+        {
+            $committee['position'] = 'member';
+        }
+        $legislator['committees'][] = $committee;
+    }
 }
 
 # Select the bill data from the database.
@@ -119,13 +119,13 @@ $sql = 'SELECT bills.number, sessions.year, bills.catch_line AS title, bills.dat
 $result = mysql_query($sql);
 if (mysql_num_rows($result) > 0)
 {
-	while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
-	{
-		$bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year']
-			.'/'.$bill['number'].'/';
-		$bill['number'] = strtoupper($bill['number']);
-		$legislator['bills'][] = $bill;
-	}
+    while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
+    {
+        $bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year']
+            .'/'.$bill['number'].'/';
+        $bill['number'] = strtoupper($bill['number']);
+        $legislator['bills'][] = $bill;
+    }
 }
 
 # We publicly call the shortname the "ID," so swap them out.
@@ -142,12 +142,10 @@ header("Access-Control-Allow-Origin: *");
 # JSON in parentheses.
 if (isset($callback))
 {
-	echo $callback.' (';
+    echo $callback.' (';
 }
 echo json_encode($legislator);
 if (isset($callback))
 {
-	echo ');';
+    echo ');';
 }
-
-?>

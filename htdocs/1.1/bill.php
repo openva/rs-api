@@ -27,15 +27,15 @@ $year = mysql_escape_string($_REQUEST['year']);
 $bill = mysql_escape_string($_REQUEST['bill']);
 if (isset($_REQUEST['callback']))
 {
-	$callback = $_REQUEST['callback'];
+    $callback = $_REQUEST['callback'];
 }
 
 $bill2 = new Bill2;
 $bill2->id = $bill2->getid($year, $bill);
 if ($bill2->id === FALSE)
 {
-	header('HTTP/1.0 404 Not Found');
-	exit();
+    header('HTTP/1.0 404 Not Found');
+    exit();
 }
 
 # Get basic data about this bill.
@@ -46,7 +46,7 @@ $bill2->text = $bill['full_text'];
 $changes = $bill2->list_changes();
 if ($changes !== FALSE)
 {
-	$bill['changes'] = $changes;
+    $bill['changes'] = $changes;
 }
 
 # Create a new video object.
@@ -65,21 +65,21 @@ header("Access-Control-Allow-Origin: *");
 # If this is old data, we can cache it for up to a month.
 if ($bill['session_id'] != SESSION_ID)
 {
-	header('Cache-Control: max-age='.(60*60*24*30.5).', public');
+    header('Cache-Control: max-age='.(60*60*24*30.5).', public');
 }
 else
 {
-	header('Cache-Control: max-age=0, public');
+    header('Cache-Control: max-age=0, public');
 }
 
 # Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
 # JSON in parentheses.
 if (isset($callback))
 {
-	echo $callback.' (';
+    echo $callback.' (';
 }
 echo json_encode($bill);
 if (isset($callback))
 {
-	echo ');';
+    echo ');';
 }

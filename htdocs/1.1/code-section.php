@@ -28,7 +28,7 @@ $database->connect_old();
 $section = mysql_escape_string(urldecode($_REQUEST['section']));
 if (isset($_REQUEST['callback']) && !empty($_REQUEST['callback']))
 {
-	$callback = $_REQUEST['callback'];
+    $callback = $_REQUEST['callback'];
 }
 
 # Select the bill data from the database.
@@ -47,13 +47,13 @@ $sql = 'SELECT sessions.year, bills.number, bills.catch_line, bills.summary, bil
 $result = mysql_query($sql);
 if (mysql_num_rows($result) == 0)
 {
-	// What error SHOULD this return?
-	header("Status: 404 Not Found");
-	$message = array('error' =>
-		array('message' => 'No Bills Found',
-			'details' => 'No bills were found that cite section '.$section.'.'));
-	echo json_encode($message);
-	exit;
+    // What error SHOULD this return?
+    header("Status: 404 Not Found");
+    $message = array('error' =>
+        array('message' => 'No Bills Found',
+            'details' => 'No bills were found that cite section '.$section.'.'));
+    echo json_encode($message);
+    exit;
 }
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
@@ -64,9 +64,9 @@ $bill = mysql_fetch_array($result, MYSQL_ASSOC);
 # and indexed arrays.
 while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
 {
-	$bill['url'] = 'https://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
-	$bill['number'] = strtoupper($bill['number']);
-	$bills[] = array_map('stripslashes', $bill);
+    $bill['url'] = 'https://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
+    $bill['number'] = strtoupper($bill['number']);
+    $bills[] = array_map('stripslashes', $bill);
 }
 
 # Send an HTTP header defining the content as JSON.
@@ -79,10 +79,10 @@ header("Access-Control-Allow-Origin: *");
 # JSON in parentheses.
 if (isset($callback))
 {
-	echo $callback.' (';
+    echo $callback.' (';
 }
 echo json_encode($bills);
 if (isset($callback))
 {
-	echo ');';
+    echo ');';
 }

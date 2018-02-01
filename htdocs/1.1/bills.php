@@ -29,7 +29,7 @@ $database->connect_old();
 $year = mysql_escape_string($_REQUEST['year']);
 if (isset($_REQUEST['callback']))
 {
-	$callback = $_REQUEST['callback'];
+    $callback = $_REQUEST['callback'];
 }
 
 # Select the bill data from the database.
@@ -48,8 +48,8 @@ $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status,
 $result = mysql_query($sql);
 if (mysql_num_rows($result) == 0)
 {
-	// send this as a JSON-formatted error!
-	die('Richmond Sunlight has no record of bills for ' . $year . '.');
+    // send this as a JSON-formatted error!
+    die('Richmond Sunlight has no record of bills for ' . $year . '.');
 }
 
 $bills = array();
@@ -58,17 +58,17 @@ $bills = array();
 # and indexed arrays.
 while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
 {
-	$bill = array_map('stripslashes', $bill);
+    $bill = array_map('stripslashes', $bill);
 
-	# Assign the patron data to a subelement.
-	$bill['patron']['name'] = $bill['patron'];
-	$bill['patron']['id'] = $bill['patron_id'];
+    # Assign the patron data to a subelement.
+    $bill['patron']['name'] = $bill['patron'];
+    $bill['patron']['id'] = $bill['patron_id'];
 
-	# Eliminate the fields we no longer need.
-	unset($bill['patron']);
-	unset($bill['patron_id']);
+    # Eliminate the fields we no longer need.
+    unset($bill['patron'], $bill['patron_id']);
+    
 
-	$bills[] = $bill;
+    $bills[] = $bill;
 }
 
 # Send an HTTP header defining the content as JSON.
@@ -81,10 +81,10 @@ header("Access-Control-Allow-Origin: *");
 # JSON in parentheses.
 if (isset($callback))
 {
-	echo $callback.' (';
+    echo $callback.' (';
 }
 echo json_encode($bills);
 if (isset($callback))
 {
-	echo ');';
+    echo ');';
 }

@@ -28,7 +28,7 @@ $database->connect_old();
 $section = mysql_escape_string(urldecode($_REQUEST['section']));
 if (isset($_REQUEST['callback']) && !empty($_REQUEST['callback']))
 {
-	$callback = $_REQUEST['callback'];
+    $callback = $_REQUEST['callback'];
 }
 
 # Select the bill data from the database.
@@ -49,26 +49,26 @@ $sql = 'SELECT DISTINCT bills.number AS bill_number, sessions.year, files.date, 
 $result = mysql_query($sql);
 if (mysql_num_rows($result) == 0)
 {
-	header("Status: 404 Not Found");
-	$message = array('error' =>
-		array('message' => 'No Video Found',
-			'details' => 'No video was found that’s based on bills that cite section '.$section.'.'));
-	echo json_encode($message);
-	exit;
+    header("Status: 404 Not Found");
+    $message = array('error' =>
+        array('message' => 'No Video Found',
+            'details' => 'No video was found that’s based on bills that cite section '.$section.'.'));
+    echo json_encode($message);
+    exit;
 }
 
 # Build up a list of all video clips
 while ($clip = mysql_fetch_array($result, MYSQL_ASSOC))
 {
-	$clip['bill_url'] = 'https://www.richmondsunlight.com/bill/' . $clip['year'] . '/'
-		. $clip['bill_number'] . '/';
-	$clip['bill_number'] = strtoupper($clip['bill_number']);
-	$clip['screenshot'] = str_replace('/video/', 'https://s3.amazonaws.com/video.richmondsunlight.com/', $clip['screenshot']);
-	if (strpos($clip['video_url'], 'archive.org') === FALSE)
-	{
-		$clip['video_url'] = 'https://www.richmondsunlight.com' . $clip['video_url'];
-	}
-	$clips[] = array_map('stripslashes', $clip);
+    $clip['bill_url'] = 'https://www.richmondsunlight.com/bill/' . $clip['year'] . '/'
+        . $clip['bill_number'] . '/';
+    $clip['bill_number'] = strtoupper($clip['bill_number']);
+    $clip['screenshot'] = str_replace('/video/', 'https://s3.amazonaws.com/video.richmondsunlight.com/', $clip['screenshot']);
+    if (strpos($clip['video_url'], 'archive.org') === FALSE)
+    {
+        $clip['video_url'] = 'https://www.richmondsunlight.com' . $clip['video_url'];
+    }
+    $clips[] = array_map('stripslashes', $clip);
 }
 
 # Eliminate any clip that is a subset of another one. For example, we might have gotten a list of
@@ -77,28 +77,28 @@ while ($clip = mysql_fetch_array($result, MYSQL_ASSOC))
 foreach ($clips as $key => &$clip)
 {
 
-	foreach ($clips as $candidate)
-	{
+    foreach ($clips as $candidate)
+    {
 
-		if ($candidate->video_url == $clip->video_url)
-		{
+        if ($candidate->video_url == $clip->video_url)
+        {
 
-			# If there is another clip that starts earlier than or when this one does, and ends
-			# later than or when this one does, than delete this one.
-			if (
-				( time_to_seconds($candidate['time_start']) <= time_to_seconds($clip['time_start']) )
-				&&
-				( time_to_seconds($candidate['time_end']) >= time_to_seconds($clip['time_end']) )
-				)
-			{
-				unset($clips[$key]);
-			}
+            # If there is another clip that starts earlier than or when this one does, and ends
+            # later than or when this one does, than delete this one.
+            if (
+                (time_to_seconds($candidate['time_start']) <= time_to_seconds($clip['time_start']))
+                &&
+                (time_to_seconds($candidate['time_end']) >= time_to_seconds($clip['time_end']))
+                )
+            {
+                unset($clips[$key]);
+            }
 
-			break(2);
+            break(2);
 
-		}
+        }
 
-	}
+    }
 
 }
 
@@ -120,10 +120,10 @@ header("Access-Control-Allow-Origin: *");
 # JSON in parentheses.
 if (isset($callback))
 {
-	echo $callback.' (';
+    echo $callback.' (';
 }
 echo json_encode($clips);
 if (isset($callback))
 {
-	echo ');';
+    echo ');';
 }

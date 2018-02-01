@@ -28,7 +28,7 @@ require_once 'functions.inc.php';
 $hash = mysql_escape_string(urldecode($_REQUEST['hash']));
 if (isset($_REQUEST['callback']) && !empty($_REQUEST['callback']))
 {
-	$callback = $_REQUEST['callback'];
+    $callback = $_REQUEST['callback'];
 }
 
 # Select the bill data from the database.
@@ -51,13 +51,13 @@ $result = mysql_query($sql);
 if (mysql_num_rows($result) == 0)
 {
 
-	header('HTTP/1.0 404 Not Found');
-	header('Content-type: application/json');
-	$message = array('error' =>
-		array('message' => 'No Bills Found',
-			'details' => 'No bills were found in portfolio '.$hash.'.'));
-	echo json_encode($message);
-	exit;
+    header('HTTP/1.0 404 Not Found');
+    header('Content-type: application/json');
+    $message = array('error' =>
+        array('message' => 'No Bills Found',
+            'details' => 'No bills were found in portfolio '.$hash.'.'));
+    echo json_encode($message);
+    exit;
 
 }
 
@@ -66,9 +66,9 @@ if (mysql_num_rows($result) == 0)
 # and indexed arrays.
 while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
 {
-	$bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
-	$bill['number'] = strtoupper($bill['number']);
-	$bills[] = array_map('stripslashes', $bill);
+    $bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
+    $bill['number'] = strtoupper($bill['number']);
+    $bills[] = array_map('stripslashes', $bill);
 }
 
 # Send an HTTP header defining the content as JSON.
@@ -81,12 +81,10 @@ header("Access-Control-Allow-Origin: *");
 # JSON in parentheses.
 if (isset($callback))
 {
-	echo $callback.' (';
+    echo $callback.' (';
 }
 echo json_encode($bills);
 if (isset($callback))
 {
-	echo ');';
+    echo ');';
 }
-
-?>

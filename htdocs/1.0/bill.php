@@ -33,7 +33,7 @@ $year = mysql_escape_string($_REQUEST['year']);
 $bill = mysql_escape_string($_REQUEST['bill']);
 if (isset($_REQUEST['callback']))
 {
-	$callback = $_REQUEST['callback'];
+    $callback = $_REQUEST['callback'];
 }
 
 # Select the bill data from the database.
@@ -51,8 +51,8 @@ $sql = 'SELECT bills.id, bills.number, bills.current_chamber, bills.status, bill
 $result = mysql_query($sql);
 if (mysql_num_rows($result) == 0)
 {
-	json_error('Richmond Sunlight has no record of bill ' . strtoupper($bill) . ' in ' . $year . '.');
-	exit();
+    json_error('Richmond Sunlight has no record of bill ' . strtoupper($bill) . ' in ' . $year . '.');
+    exit();
 }
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
@@ -67,10 +67,10 @@ $sql = 'SELECT tag
 $result = mysql_query($sql);
 if (mysql_num_rows($result) > 0)
 {
-	while ($tag = mysql_fetch_array($result, MYSQL_ASSOC))
-	{
-		$bill['tags'][] = $tag;
-	}
+    while ($tag = mysql_fetch_array($result, MYSQL_ASSOC))
+    {
+        $bill['tags'][] = $tag;
+    }
 }
 
 # Remove the HTML and the newlines from the bill summary.
@@ -85,10 +85,10 @@ $bill['patron']['name'] = $bill['name'];
 $bill['patron']['id'] = $bill['shortname'];
 
 # Eliminate the fields we no longer need.
-unset($bill['name']);
-unset($bill['shortname']);
-unset($bill['party']);
-unset($bill['id']);
+unset($bill['name'], $bill['shortname'], $bill['party'], $bill['id']);
+
+
+
 
 # Send an HTTP header defining the content as JSON.
 header('Content-type: application/json');
@@ -98,10 +98,10 @@ header("Access-Control-Allow-Origin: *");
 # JSON in parentheses.
 if (isset($callback))
 {
-	echo $callback.' (';
+    echo $callback.' (';
 }
 echo json_encode($bill);
 if (isset($callback))
 {
-	echo ');';
+    echo ');';
 }

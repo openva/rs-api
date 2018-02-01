@@ -29,7 +29,7 @@ $database->connect_old();
 $hash = mysql_escape_string(urldecode($_REQUEST['hash']));
 if (isset($_REQUEST['callback']) && !empty($_REQUEST['callback']))
 {
-	$callback = $_REQUEST['callback'];
+    $callback = $_REQUEST['callback'];
 }
 
 # Get this portfolio's basic data.
@@ -47,36 +47,36 @@ $result = mysql_query($sql);
 # If this portfolio doesn't exist or isn't visible.
 if (mysql_num_rows($result) == 0)
 {
-	header("Status: 404 Not Found");
-	$message = array('error' =>
-		array('message' => 'No Portfolio Found',
-			'details' => 'Portfolio ' . $hash . ' does not exist.'));
-	echo json_encode($message);
-	exit;
+    header("Status: 404 Not Found");
+    $message = array('error' =>
+        array('message' => 'No Portfolio Found',
+            'details' => 'Portfolio ' . $hash . ' does not exist.'));
+    echo json_encode($message);
+    exit;
 }
 
 
 $portfolio = mysql_fetch_array($result, MYSQL_ASSOC);
 $portfolio = array_map('stripslashes', $portfolio);
-	
+    
 # Make the user closer to anonymous.
 $tmp = explode(' ', $portfolio['user_name']);
 if (count($tmp) > 1)
 {
-	$portfolio['user_name'] = $tmp[0].' '.$tmp[1]{0}.'.';
+    $portfolio['user_name'] = $tmp[0].' '.$tmp[1]{0}.'.';
 }
 else
 {
-	$portfolio['user_name'] = $tmp[0];
+    $portfolio['user_name'] = $tmp[0];
 }
 if (isset($portfolio['organization']))
 {
-	unset($portfolio['user_name']);
+    unset($portfolio['user_name']);
 }
-unset($portfolio['id']);
-unset($portfolio['hash']);
-unset($portfolio['name']);
-unset($portfolio['notes']);
+unset($portfolio['id'], $portfolio['hash'], $portfolio['name'], $portfolio['notes']);
+
+
+
 
 # Select the bill data from the database.
 $sql = 'SELECT bills.number, sessions.year, dashboard_bills.notes
@@ -97,12 +97,12 @@ $sql = 'SELECT bills.number, sessions.year, dashboard_bills.notes
 $result = mysql_query($sql);
 if (mysql_num_rows($result) == 0)
 {
-	header("Status: 404 Not Found");
-	$message = array('error' =>
-		array('message' => 'No Bills Found',
-			'details' => 'No bills were found in portfolio ' . $hash . '.'));
-	echo json_encode($message);
-	exit;
+    header("Status: 404 Not Found");
+    $message = array('error' =>
+        array('message' => 'No Bills Found',
+            'details' => 'No bills were found in portfolio ' . $hash . '.'));
+    echo json_encode($message);
+    exit;
 }
 
 # Build up a listing of all bills.
@@ -111,9 +111,9 @@ if (mysql_num_rows($result) == 0)
 $portfolio['bills'] = array();
 while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
 {
-	$bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
-	$bill['number'] = strtoupper($bill['number']);
-	$portfolio['bills'][] = array_map('stripslashes', $bill);
+    $bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
+    $bill['number'] = strtoupper($bill['number']);
+    $portfolio['bills'][] = array_map('stripslashes', $bill);
 }
 
 # Send an HTTP header defining the content as JSON.
@@ -126,10 +126,10 @@ header("Access-Control-Allow-Origin: *");
 # JSON in parentheses.
 if (isset($callback))
 {
-	echo $callback.' (';
+    echo $callback.' (';
 }
 echo json_encode($portfolio);
 if (isset($callback))
 {
-	echo ');';
+    echo ');';
 }

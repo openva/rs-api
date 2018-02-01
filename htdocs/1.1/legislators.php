@@ -30,13 +30,13 @@ $database->connect_old();
 /*
  * LOCALIZE VARIABLES
  */
-if ( isset($_GET['year']) && strlen($_GET['year']) == 4 && is_numeric($_GET['year']) )
+if (isset($_GET['year']) && strlen($_GET['year']) == 4 && is_numeric($_GET['year']))
 {
-	$year = $_GET['year'];
+    $year = $_GET['year'];
 }
-if ( isset($_GET['callback']) && strlen($_GET['callback']) < 32 )
+if (isset($_GET['callback']) && strlen($_GET['callback']) < 32)
 {
-	$callback = $_GET['callback'];
+    $callback = $_GET['callback'];
 }
 
 /*
@@ -51,7 +51,7 @@ $sql = 'SELECT representatives.id, representatives.shortname, representatives.na
 			ON representatives.district_id=districts.id ';
 if (isset($year))
 {
-	$sql .= 'WHERE representatives.date_started <= ' . $year . '-01-01
+    $sql .= 'WHERE representatives.date_started <= ' . $year . '-01-01
 		AND
 			(representatives.date_ended >= ' . $year . '-01-01
 			OR
@@ -63,40 +63,40 @@ $result = mysql_query($sql);
 if (mysql_num_rows($result) > 0)
 {
 
-	$legislators = array();
+    $legislators = array();
 
-	while ($legislator = mysql_fetch_array($result, MYSQL_ASSOC))
-	{
+    while ($legislator = mysql_fetch_array($result, MYSQL_ASSOC))
+    {
 
-		$legislator = array_map('stripslashes', $legislator);
+        $legislator = array_map('stripslashes', $legislator);
 
-		/*
-		 * Eliminate any useless data.
-		 */
-		if ($legislator['date_started'] == '0000-00-00')
-		{
-			unset($legislator['date_started']);
-		}
-		if ($legislator['date_ended'] == '0000-00-00')
-		{
-			unset($legislator['date_ended']);
-		}
+        /*
+         * Eliminate any useless data.
+         */
+        if ($legislator['date_started'] == '0000-00-00')
+        {
+            unset($legislator['date_started']);
+        }
+        if ($legislator['date_ended'] == '0000-00-00')
+        {
+            unset($legislator['date_ended']);
+        }
 
-		/*
-		 * Generate the URL for this legislator on the site.
-		 */
-		$legislator['site_url'] = 'https://www.richmondsunlight.com/legislator/'
-			. $legislator['shortname'] . '/';
+        /*
+         * Generate the URL for this legislator on the site.
+         */
+        $legislator['site_url'] = 'https://www.richmondsunlight.com/legislator/'
+            . $legislator['shortname'] . '/';
 
-		/*
-		 * We publicly call the shortname the "ID," so swap them out.
-		 */
-		$legislator['id'] = $legislator['shortname'];
-		unset($legislator['shortname']);
+        /*
+         * We publicly call the shortname the "ID," so swap them out.
+         */
+        $legislator['id'] = $legislator['shortname'];
+        unset($legislator['shortname']);
 
-		$legislators[] = $legislator;
+        $legislators[] = $legislator;
 
-	}
+    }
 
 }
 
@@ -105,7 +105,7 @@ if (mysql_num_rows($result) > 0)
  */
 else
 {
-	$legislators = 'Richmond Sunlight has no record of any legislators. Yes, we are also troubled by this.';
+    $legislators = 'Richmond Sunlight has no record of any legislators. Yes, we are also troubled by this.';
 }
 
 /*
@@ -124,10 +124,10 @@ header("Access-Control-Allow-Origin: *");
  */
 if (isset($callback))
 {
-	echo $callback.' (';
+    echo $callback.' (';
 }
 echo json_encode($legislators);
 if (isset($callback))
 {
-	echo ');';
+    echo ');';
 }
