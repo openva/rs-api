@@ -6,17 +6,13 @@
 # PURPOSE
 # Accepts a Photosynthesis portfolio hash, and responds with a listing of bills contained within
 # that portfolio, along with any associated comments.
-#
-# NOTES
-# This is not intended to be viewed. It just spits out a JSON file and that's that.
-#
 ###
 
 # INCLUDES
 # Include any files or libraries that are necessary for this specific
 # page to function.
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
 # DECLARATIVE FUNCTIONS
@@ -81,11 +77,21 @@ if (isset($portfolio['organization']))
 }
 unset($portfolio['id'], $portfolio['hash'], $portfolio['name'], $portfolio['notes']);
 
-
-
-
 # Select the bill data from the database.
-$sql = 'SELECT bills.number, sessions.year, dashboard_bills.notes
+$sql = 'SELECT bills.number, bills.catch_line, sessions.year, dashboard_bills.notes,
+			
+			(SELECT status
+			FROM bills_status
+			WHERE bill_id=bills.id
+			ORDER BY date DESC, id DESC
+			LIMIT 1) AS status,
+
+			(SELECT date
+			FROM bills_status
+			WHERE bill_id=bills.id
+			ORDER BY date DESC, id DESC
+			LIMIT 1) AS date
+
 		FROM dashboard_portfolios
 		LEFT JOIN dashboard_user_data
 			ON dashboard_portfolios.user_id=dashboard_user_data.user_id
@@ -95,8 +101,8 @@ $sql = 'SELECT bills.number, sessions.year, dashboard_bills.notes
 			ON dashboard_bills.bill_id=bills.id
 		LEFT JOIN sessions
 			ON bills.session_id=sessions.id
-		WHERE dashboard_portfolios.hash="'.$hash.'"
-		AND bills.session_id='.SESSION_ID.'
+		WHERE dashboard_portfolios.hash="' . $hash . '"
+		AND bills.session_id=' . SESSION_ID . '
 		ORDER BY bills.chamber DESC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
@@ -111,13 +117,11 @@ if (mysql_num_rows($result) == 0)
     exit;
 }
 
-# Build up a listing of all bills.
-# The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
-# and indexed arrays.
+# Build up a list of all bills.
 $portfolio['bills'] = array();
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
+while ($bill = mysql_fetch_associ($result))
 {
-    $bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
+    $bill['url'] = 'https://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
     $bill['number'] = strtoupper($bill['number']);
     $portfolio['bills'][] = array_map('stripslashes', $bill);
 }
