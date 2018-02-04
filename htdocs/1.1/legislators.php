@@ -40,6 +40,16 @@ if (isset($_GET['callback']) && strlen($_GET['callback']) < 32)
 }
 
 /*
+ *  Send an HTTP header defining the content as JSON.
+ */
+header('Content-type: application/json');
+
+/*
+ * Send an HTTP header allowing CORS.
+ */
+header("Access-Control-Allow-Origin: *");
+
+/*
  * Select basic legislator data from the database.
  */
 $sql = 'SELECT representatives.id, representatives.shortname, representatives.name,
@@ -107,16 +117,6 @@ else
 {
     $legislators = 'Richmond Sunlight has no record of any legislators. Yes, we are also troubled by this.';
 }
-
-/*
- *  Send an HTTP header defining the content as JSON.
- */
-header('Content-type: application/json');
-
-/*
- * Send an HTTP header allowing CORS.
- */
-header("Access-Control-Allow-Origin: *");
 
 /*
  * Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the

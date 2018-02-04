@@ -32,6 +32,12 @@ if (isset($_REQUEST['callback']) && !empty($_REQUEST['callback']))
     $callback = $_REQUEST['callback'];
 }
 
+# Send an HTTP header defining the content as JSON.
+header('Content-type: application/json');
+
+# Send an HTTP header allowing CORS.
+header("Access-Control-Allow-Origin: *");
+
 # Get this portfolio's basic data.
 $sql = 'SELECT dashboard_portfolios.id, dashboard_portfolios.hash, dashboard_portfolios.name,
 		dashboard_portfolios.notes, users.name AS user_name, dashboard_user_data.organization,
@@ -115,12 +121,6 @@ while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
     $bill['number'] = strtoupper($bill['number']);
     $portfolio['bills'][] = array_map('stripslashes', $bill);
 }
-
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
 
 # Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
 # JSON in parentheses.

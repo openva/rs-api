@@ -30,6 +30,12 @@ if (isset($_REQUEST['callback']))
     $callback = $_REQUEST['callback'];
 }
 
+# Send an HTTP header defining the content as JSON.
+header('Content-type: application/json');
+
+# Send an HTTP header allowing CORS.
+header("Access-Control-Allow-Origin: *");
+
 $bill2 = new Bill2;
 $bill2->id = $bill2->getid($year, $bill);
 if ($bill2->id === FALSE)
@@ -55,12 +61,6 @@ $video = new Video();
 # Get a list of videos for this bill.
 $video->bill_id = $bill['id'];
 $bill['video'] = $video->by_bill();
-
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
 
 # If this is old data, we can cache it for up to a month.
 if ($bill['session_id'] != SESSION_ID)

@@ -31,6 +31,12 @@ if (isset($_REQUEST['callback']) && !empty($_REQUEST['callback']))
     $callback = $_REQUEST['callback'];
 }
 
+# Send an HTTP header defining the content as JSON.
+header('Content-type: application/json');
+
+# Send an HTTP header allowing CORS.
+header("Access-Control-Allow-Origin: *");
+
 # Select the bill data from the database.
 $sql = 'SELECT DISTINCT bills.number AS bill_number, sessions.year, files.date, files.chamber,
 		video_clips.time_start, video_clips.time_end, video_clips.screenshot,
@@ -109,12 +115,6 @@ $clips = array_values($clips);
 
 # Make this an object.
 $clips = (object) $clips;
-
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
 
 # Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
 # JSON in parentheses.

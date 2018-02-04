@@ -31,6 +31,12 @@ if (isset($_REQUEST['callback']) && !empty($_REQUEST['callback']))
     $callback = $_REQUEST['callback'];
 }
 
+# Send an HTTP header defining the content as JSON.
+header('Content-type: application/json');
+
+# Send an HTTP header allowing CORS.
+header("Access-Control-Allow-Origin: *");
+
 # Select the bill data from the database.
 // Use proper bill number sorting
 $sql = 'SELECT sessions.year, bills.number, bills.catch_line, bills.summary, bills.outcome,
@@ -68,12 +74,6 @@ while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
     $bill['number'] = strtoupper($bill['number']);
     $bills[] = array_map('stripslashes', $bill);
 }
-
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
 
 # Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
 # JSON in parentheses.

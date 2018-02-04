@@ -31,6 +31,12 @@ if (isset($_REQUEST['callback']))
     $callback = $_REQUEST['callback'];
 }
 
+# Send an HTTP header defining the content as JSON.
+header('Content-type: application/json');
+
+# Send an HTTP header allowing CORS.
+header("Access-Control-Allow-Origin: *");
+
 # Select general legislator data from the database.
 $sql = 'SELECT representatives.id, representatives.shortname, representatives.name,
 		representatives.name_formatted, representatives.place, representatives.chamber,
@@ -130,12 +136,6 @@ if (@mysql_num_rows($result) > 0)
 # We publicly call the shortname the "ID," so swap them out.
 $legislator['id'] = $legislator['shortname'];
 unset($legislator['shortname']);
-
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
 
 # Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
 # JSON in parentheses.
