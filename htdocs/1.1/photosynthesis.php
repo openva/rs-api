@@ -119,7 +119,7 @@ if (mysql_num_rows($result) == 0)
 
 # Build up a list of all bills.
 $portfolio['bills'] = array();
-while ($bill = mysql_fetch_associ($result))
+while ($bill = mysql_fetch_assoc($result))
 {
     $bill['url'] = 'https://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
     $bill['number'] = strtoupper($bill['number']);
