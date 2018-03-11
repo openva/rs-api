@@ -25,7 +25,7 @@ $database = new Database;
 $database->connect_old();
 
 # LOCALIZE VARIABLES
-$shortname = @mysql_real_escape_string($_GET['shortname']);
+$shortname = mysql_real_escape_string($_GET['shortname']);
 if (isset($_REQUEST['callback']))
 {
     $callback = $_REQUEST['callback'];
@@ -37,105 +37,57 @@ header('Content-type: application/json');
 # Send an HTTP header allowing CORS.
 header("Access-Control-Allow-Origin: *");
 
-# Select general legislator data from the database.
-$sql = 'SELECT representatives.id, representatives.shortname, representatives.name,
-		representatives.name_formatted, representatives.place, representatives.chamber,
-		representatives.sex, representatives.birthday, representatives.party,
-		representatives.url, representatives.email, representatives.address_district,
-		representatives.address_richmond, representatives.phone_district,
-		representatives.phone_richmond, representatives.date_started, representatives.date_ended,
-		representatives.partisanship, representatives.latitude AS longitude,
-		representatives.longitude AS latitude, representatives.lis_shortname AS lis_id,
-		districts.number AS district, districts.description AS district_description
-		FROM representatives
-		LEFT JOIN districts
-			ON representatives.district_id=districts.id
-		WHERE shortname = "'.$shortname.'"';
 
-$result = @mysql_query($sql);
-if (@mysql_num_rows($result) > 0)
+# Create a new legislator object.
+$leg = new Legislator();
+
+# Get the ID for this shortname.
+$leg_id = $leg->getid($shortname);
+if ($leg_id === FALSE)
 {
+    header("Status: 404 Not Found\n\r");
+    exit();
+}
 
-    $legislator = @mysql_fetch_array($result, MYSQL_ASSOC);
-    $legislator = array_map('stripslashes', $legislator);
+# Return the legislator's data as an array.
+$legislator = $leg->info($leg_id);
 
-    # Eliminate any useless data.
-    if ($legislator['birthday'] == '0000-00-00')
+# Get this legislator's bills.
+$sql = 'SELECT bills.id, bills.number, bills.catch_line,
+        DATE_FORMAT(bills.date_introduced, "%M %d, %Y") AS date_introduced,
+        committees.name, sessions.year,
+        (
+            SELECT status
+            FROM bills_status
+            WHERE bill_id=bills.id
+            ORDER BY date DESC, id DESC
+            LIMIT 1
+        ) AS status
+        FROM bills
+        LEFT JOIN sessions
+            ON bills.session_id=sessions.id
+        LEFT JOIN committees
+            ON bills.last_committee_id = committees.id
+        WHERE bills.chief_patron_id="'.$legislator['id'].'"
+        ORDER BY sessions.year DESC,
+        SUBSTRING(bills.number FROM 1 FOR 2) ASC,
+        CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
+$result = mysql_query($sql);
+if (mysql_num_rows($result) > 0)
+{
+    $legislator['bills'] = array();
+    while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
     {
-        unset($legislator['birthday']);
-    }
-    if ($legislator['date_started'] == '0000-00-00')
-    {
-        unset($legislator['date_started']);
-    }
-    if ($legislator['date_ended'] == '0000-00-00')
-    {
-        unset($legislator['date_ended']);
-    }
-    if (empty($legislator['phone_district']))
-    {
-        unset($legislator['phone_district']);
-    }
-    if (empty($legislator['phone_richmond']))
-    {
-        unset($legislator['phone_richmond']);
-    }
-    if (empty($legislator['address_district']))
-    {
-        unset($legislator['address_district']);
-    }
-    if (empty($legislator['address_richmond']))
-    {
-        unset($legislator['address_richmond']);
-    }
-
-    # Select the committee data from the database.
-    $sql = 'SELECT committees.name, committee_members.position
-			FROM committees
-			LEFT JOIN committee_members
-				ON committees.id = committee_members.committee_id
-			WHERE committee_members.representative_id = '.$legislator['id'].'
-			AND (date_ended = "0000-00-00" OR date_ended IS NULL)';
-    $result = @mysql_query($sql);
-    if (@mysql_num_rows($result) > 0)
-    {
-        while ($committee = @mysql_fetch_array($result, MYSQL_ASSOC))
-        {
-            $committee = array_map('stripslashes', $committee);
-            if (empty($committee['position']))
-            {
-                $committee['position'] = 'member';
-            }
-            $legislator['committees'][] = $committee;
-        }
-    }
-
-    # Select the bill data from the database.
-    $sql = 'SELECT bills.number, sessions.year, bills.catch_line AS title, bills.date_introduced,
-			bills.outcome
-			FROM bills
-			LEFT JOIN sessions
-				ON bills.session_id=sessions.id
-			WHERE bills.chief_patron_id='.$legislator['id'].'
-			ORDER BY sessions.year ASC,
-			SUBSTRING(bills.number FROM 1 FOR 2) ASC,
-			CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-    $result = @mysql_query($sql);
-    if (@mysql_num_rows($result) > 0)
-    {
-        while ($bill = @mysql_fetch_array($result, MYSQL_ASSOC))
-        {
-            $bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year']
-                .'/'.$bill['number'].'/';
-            $bill['number'] = strtoupper($bill['number']);
-            $legislator['bills'][] = $bill;
-        }
+        $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/'
+            . $bill['number'] . '/';
+        $bill['number'] = strtoupper($bill['number']);
+        $legislator['bills'][] = (array) $bill;
     }
 }
 
 # We publicly call the shortname the "ID," so swap them out.
+$legislator['rs_id'] = $legislator['id'];
 $legislator['id'] = $legislator['shortname'];
-unset($legislator['shortname']);
 
 # Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
 # JSON in parentheses.
