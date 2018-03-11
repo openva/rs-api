@@ -24,7 +24,7 @@ require_once 'functions.inc.php';
 
 # LOCALIZE VARIABLES
 $year = mysql_escape_string($_REQUEST['year']);
-$bill = mysql_escape_string($_REQUEST['bill']);
+$bill = mysql_escape_string(strtolower($_REQUEST['bill']));
 if (isset($_REQUEST['callback']))
 {
     $callback = $_REQUEST['callback'];
