@@ -17,11 +17,8 @@ variables=(
 
 SETTINGS_FILE=htdocs/includes/settings.inc.php
 
-# If the settings file doesn't exist, abort
-if [ ! -e "$SETTINGS_FILE" ]; then
-	echo Aborting because "$SETTINGS_FILE" does not exist at "$(pwd)"
-	exit 1
-fi
+# Copy the settings file template to the final path.
+cp htdocs/includes/settings-default.inc.php "$SETTINGS_FILE"
 
 # Iterate over the variables and make sure that they're all populated.
 for i in "${variables[@]}"
@@ -33,7 +30,6 @@ do
 done
 
 # Now iterate over again and perform the replacement.
-cp htdocs/includes/settings-default.inc.php htdocs/includes/settings.inc.php
 for i in "${variables[@]}"
 do
 	sed -i -e "s|define('$i', '')|define('$i', '${!i}')|g" htdocs/includes/settings.inc.php
