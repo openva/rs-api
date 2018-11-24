@@ -18,7 +18,7 @@ require_once 'functions.inc.php';
 /*
  * Localize variables
  */
-$fragment = mysql_escape_string($_REQUEST['fragment']);
+$fragment = mysql_escape_string($_REQUEST['term']);
 if (isset($_REQUEST['callback']))
 {
     $callback = $_REQUEST['callback'];
