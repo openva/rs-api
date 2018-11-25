@@ -1,7 +1,10 @@
 RewriteEngine On
 
+
+RewriteCond %{QUERY_STRING} ^term=(.+)$
+RewriteRule ^tag-suggest/?$ tag-suggest.php?term=$1? [QSA]
+
 RewriteRule ^bysection/(.*).json$ code-section.php?section=$1 [QSA]
-RewriteRule ^tag-suggest/?term=([A-Za-z-]{3,})$ tag-suggest.php?term=$1 [QSA]
 RewriteRule ^section-video/(.*).json$ code-section-video.php?section=$1 [QSA]
 RewriteRule ^photosynthesis/([a-z0-9]{5}).json$ photosynthesis.php?hash=$1 [QSA]
 RewriteRule ^bills/([0-9]{4}).json$ bills.php?year=$1 [QSA]
