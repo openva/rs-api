@@ -1,5 +1,5 @@
 FROM php:5.6.39-apache
-RUN docker-php-ext-install mysqli && a2enmod rewrite
+RUN docker-php-ext-install mysqli && a2enmod rewrite && a2enmod expires
 
 RUN apt-get update
 RUN apt-get install -y git
