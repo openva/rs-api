@@ -1,2 +1,3 @@
 htdocs/includes/
 *.cache
+.env
