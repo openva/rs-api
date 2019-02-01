@@ -1,8 +1,8 @@
 #!/bin/bash
 #==================================================================================
-# Uses environment variables within Travis CI to populate includes/settings.inc.php
-# prior to deployment. This allows secrets (e.g., API keys) to be stored in Travis,
-# while the settings file is stored on GitHub.
+# Uses environment variables to populate includes/settings.inc.php. This allows
+# secrets (e.g., API keys) to be stored in e.g. Travis, while the settings file is
+# stored on GitHub.
 #==================================================================================
 
 # Define the list of environmental variables that we need to populate during deployment.
@@ -24,7 +24,7 @@ cp htdocs/includes/settings-default.inc.php "$SETTINGS_FILE"
 for i in "${variables[@]}"
 do
 	if [ -z "${!i}" ]; then
-		echo "Travis CI has no value set for $i -- aborting"
+		echo "There is no value set for $i -- aborting"
 		exit 1
 	fi
 done
