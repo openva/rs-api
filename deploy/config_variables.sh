@@ -13,6 +13,7 @@ variables=(
 	PDO_PASSWORD
 	MYSQL_DATABASE
 	MEMCACHED_SERVER
+	API_URL
 )
 
 SETTINGS_FILE=htdocs/includes/settings.inc.php

@@ -1,13 +1,17 @@
 version: '3'
 services:
   api:
-    build: .
+    build:
+      context: deploy/
+      dockerfile: ./API.Dockerfile
     ports:
       - "5001:80"
     volumes:
       - ./htdocs:/var/www/html/
   db:
-    image: mysql
+    build:
+      context: deploy/
+      dockerfile: ./MySQL.Dockerfile
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - db_data:/var/lib/mysql
