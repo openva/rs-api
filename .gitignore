@@ -1,3 +1,4 @@
 htdocs/includes/
 *.cache
 .env
+htdocs/getinfo.php

@@ -7,13 +7,8 @@ if [ ! -d "htdocs/includes/" ]; then
     rm -Rf richmondsunlight.com/
 fi
 
-# Use the Docker environment variables to create the settings file.
-if [ ! -f deploy/.docker.env ]; then
-	echo "deploy/.docker.env not found -- can't configure settings.inc.php"
-fi
-
-source deploy/.docker.env
-deploy/config_variables.sh
+# Move over the settings file.
+cp deploy/settings-docker.inc.php htdocs/includes/settings.inc.php
 
 docker-compose build && docker-compose up && 
     CONTAINER_ID=$(docker-compose ps -q db) && \

@@ -12,12 +12,9 @@ services:
     build:
       context: deploy/
       dockerfile: ./MySQL.Dockerfile
-    command: --default-authentication-plugin=mysql_native_password
     volumes:
       - db_data:/var/lib/mysql
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: example
     ports:
       - "5002:3306"
 volumes:

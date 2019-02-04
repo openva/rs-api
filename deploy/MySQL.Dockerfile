@@ -1,7 +1,19 @@
-FROM mysql:5.6
+FROM mariadb:latest
 
-RUN apt-get update
-RUN apt-get install -y git
+# "When a container is started for the first time, a new database with the specified name
+# will be created and initialized with the provided configuration variables. Furthermore,
+# it will execute files with extensions .sh, .sql and .sql.gz that are found in
+# /docker-entrypoint-initdb.d. Files will be executed in alphabetical order."
+#       -- from https://hub.docker.com/_/mariadb/#initializing-a-fresh-instance
+ADD database.sql /docker-entrypoint-initdb.d
+
+ENV MYSQL_ROOT_PASSWORD password
+ENV MYSQL_DATABASE richmondsunlight
+ENV MYSQL_USER ricsun
+ENV MYSQL_PASSWORD password
+
+RUN apt-get update && apt-get -y install vim
 
 EXPOSE 3306
-CMD ["service mysqld start"]
+
+CMD ["mysqld"]
