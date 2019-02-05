@@ -3,6 +3,7 @@
 # Get the includes directory from the main repo, if we don't have it.
 if [ ! -d "htdocs/includes/" ]; then
     git clone https://github.com/openva/richmondsunlight.com.git
+    git checkout deploy
     mv richmondsunlight.com/htdocs/includes htdocs/includes/
     rm -Rf richmondsunlight.com/
 fi
