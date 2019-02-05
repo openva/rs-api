@@ -29,7 +29,7 @@ define('LIS_FTP_USERNAME', '');
 define('LIS_FTP_PASSWORD', '');
 
 # The DSN to connect to MySQL.
-define('PDO_DSN', 'mysql:host=localhost;;port=dbname=richmondsunlight');
+define('PDO_DSN', 'mysql:host=localhost;dbname=richmondsunlight');
 define('PDO_SERVER', 'localhost');
 define('PDO_USERNAME', 'root');
 define('PDO_PASSWORD', 'password');
