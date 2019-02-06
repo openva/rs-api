@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 services:
   api:
     build:
@@ -9,7 +9,9 @@ services:
     ports:
       - "5001:80"
     volumes:
-      - ./htdocs:/var/www/html/
+      - type: bind
+        source: htdocs/
+        target: /var/www/html/
   db:
     build:
       context: deploy/
