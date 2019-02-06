@@ -21,8 +21,5 @@ fi
 # Move over the settings file.
 cp deploy/settings-docker.inc.php htdocs/includes/settings.inc.php
 
-docker-compose build && docker-compose up && 
-    CONTAINER_ID=$(docker-compose ps -q db) && \
-    docker exec -i "$CONTAINER_ID" git clone https://github.com/openva/rs-machine.git /tmp/ && \
-    docker exec -i "$CONTAINER_ID" mysql < /tmp/rs-machine/deploy/database.sql && \
-    docker exec -i "$CONTAINER_ID" rm -Rf /tmp/rs-machine
+# Stand it up.
+docker-compose build && docker-compose up
