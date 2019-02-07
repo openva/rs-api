@@ -21,5 +21,14 @@ services:
     restart: always
     ports:
       - "3306:3306"
+  memcached:
+    image: memcached:latest
+    entrypoint:
+      - memcached
+      - -m 64
+    ports:
+      - "11211:11211"
+    depends_on:
+      - api
 volumes:
     db_data: {}
