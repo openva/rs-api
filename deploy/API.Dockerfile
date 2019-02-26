@@ -16,8 +16,6 @@ WORKDIR /var/www/
 
 COPY . deploy/
 
-RUN deploy/docker-setup.sh
-
 WORKDIR /var/www/html/
 
 EXPOSE 80
