@@ -16,7 +16,7 @@ script:
   && ./deploy/config_variables.sh
   && zip -qr latest *
   && mkdir -p upload
-  && mv latest.zip upload/latest.zip
+  && mv latest.zip upload/rs-api-master.zip
 deploy:
 - provider: s3
   access_key_id: $AWS_ACCESS_KEY
@@ -25,13 +25,13 @@ deploy:
   skip_cleanup: true
   on:
     branch: master
-  bucket: deploy.api.richmondsunlight.com
+  bucket: deploy.richmondsunlight.com
   region: us-east-1
 - provider: codedeploy
   access_key_id: $AWS_ACCESS_KEY
   secret_access_key: $AWS_SECRET_KEY
-  bucket: deploy.api.richmondsunlight.com
-  key: latest.zip
+  bucket: deploy.richmondsunlight.com
+  key: rs-api-master.zip
   bundle_type: zip
   application: RS-API
   deployment_group: RS-API-Fleet
