@@ -1,5 +1,5 @@
 #!/bin/bash
 
 # Set permissions properly, since appspec.yml gets this wrong.
-chown -R ricsun:web /vol/www/api.richmondsunlight.com/
-chmod -R g+w /vol/www/api.richmondsunlight.com/
+chown -R ubuntu:ubuntu /var/www/api.richmondsunlight.com/
+chmod -R g+w /var/www/api.richmondsunlight.com/
