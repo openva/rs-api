@@ -26,10 +26,6 @@ $database->connect_old();
 
 # LOCALIZE VARIABLES
 $section = mysql_escape_string(urldecode($_REQUEST['section']));
-if (isset($_REQUEST['callback']) && !empty($_REQUEST['callback']))
-{
-    $callback = $_REQUEST['callback'];
-}
 
 # Send an HTTP header defining the content as JSON.
 header('Content-type: application/json');
@@ -75,14 +71,5 @@ while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
     $bills[] = array_map('stripslashes', $bill);
 }
 
-# Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
-# JSON in parentheses.
-if (isset($callback))
-{
-    echo $callback.' (';
-}
+# Send the JSON.
 echo json_encode($bills);
-if (isset($callback))
-{
-    echo ');';
-}

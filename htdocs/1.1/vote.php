@@ -20,10 +20,6 @@ require_once 'functions.inc.php';
  */
 $year = mysql_escape_string($_REQUEST['year']);
 $lis_id = mysql_escape_string($_REQUEST['lis_id']);
-if (isset($_REQUEST['callback']))
-{
-    $callback = $_REQUEST['callback'];
-}
 
 /*
  * Send an HTTP header defining the content as JSON.
@@ -51,14 +47,5 @@ if ($vote === FALSE)
 $vote['legislators'] = $vote_info->get_detailed();
 
 
-# Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
-# JSON in parentheses.
-if (isset($callback))
-{
-    echo $callback . ' (';
-}
+# Send the JSON.
 echo json_encode($vote);
-if (isset($callback))
-{
-    echo ');';
-}

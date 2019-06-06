@@ -19,10 +19,6 @@ require_once 'functions.inc.php';
  * Localize variables
  */
 $fragment = mysql_escape_string($_REQUEST['term']);
-if (isset($_REQUEST['callback']))
-{
-    $callback = $_REQUEST['callback'];
-}
 
 /*
  * Send an HTTP header defining the content as JSON.
@@ -43,14 +39,5 @@ if ($suggestions === FALSE)
     exit();
 }
 
-# Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
-# JSON in parentheses.
-if (isset($callback))
-{
-    echo $callback . ' (';
-}
+# Send the JSON.
 echo json_encode($suggestions);
-if (isset($callback))
-{
-    echo ');';
-}

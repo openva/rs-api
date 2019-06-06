@@ -26,10 +26,6 @@ $database->connect_old();
 
 # LOCALIZE VARIABLES
 $shortname = mysql_real_escape_string($_GET['shortname']);
-if (isset($_REQUEST['callback']))
-{
-    $callback = $_REQUEST['callback'];
-}
 
 # Send an HTTP header defining the content as JSON.
 header('Content-type: application/json');
@@ -89,14 +85,5 @@ if (mysql_num_rows($result) > 0)
 $legislator['rs_id'] = $legislator['id'];
 $legislator['id'] = $legislator['shortname'];
 
-# Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
-# JSON in parentheses.
-if (isset($callback))
-{
-    echo $callback.' (';
-}
+# Send the JSON.
 echo json_encode($legislator);
-if (isset($callback))
-{
-    echo ');';
-}

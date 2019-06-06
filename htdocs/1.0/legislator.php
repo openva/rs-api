@@ -25,10 +25,6 @@ require_once 'functions.inc.php';
 
 # LOCALIZE VARIABLES
 $shortname = @mysql_real_escape_string($_GET['shortname']);
-if (isset($_REQUEST['callback']))
-{
-    $callback = $_REQUEST['callback'];
-}
 
 # Select general legislator data from the database.
 $sql = 'SELECT representatives.id, representatives.shortname, representatives.name,
@@ -138,14 +134,5 @@ header('Content-type: application/json');
 # Send an HTTP header allowing CORS.
 header("Access-Control-Allow-Origin: *");
 
-# Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
-# JSON in parentheses.
-if (isset($callback))
-{
-    echo $callback.' (';
-}
+# Send the JSON.
 echo json_encode($legislator);
-if (isset($callback))
-{
-    echo ');';
-}

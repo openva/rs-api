@@ -27,10 +27,6 @@ require_once 'functions.inc.php';
 
 # LOCALIZE VARIABLES
 $year = mysql_escape_string($_REQUEST['year']);
-if (isset($_REQUEST['callback']))
-{
-    $callback = $_REQUEST['callback'];
-}
 
 # Select the bill data from the database.
 $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status, bills.outcome,
@@ -77,14 +73,5 @@ header('Content-type: application/json');
 # Send an HTTP header allowing CORS.
 header("Access-Control-Allow-Origin: *");
 
-# Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
-# JSON in parentheses.
-if (isset($callback))
-{
-    echo $callback.' (';
-}
+# Send the JSON.
 echo json_encode($bills);
-if (isset($callback))
-{
-    echo ');';
-}

@@ -31,10 +31,6 @@ connect_to_db();
 # LOCALIZE VARIABLES
 $year = mysql_escape_string($_REQUEST['year']);
 $bill = mysql_escape_string($_REQUEST['bill']);
-if (isset($_REQUEST['callback']))
-{
-    $callback = $_REQUEST['callback'];
-}
 
 # Select the bill data from the database.
 $sql = 'SELECT bills.id, bills.number, bills.current_chamber, bills.status, bills.date_introduced,
@@ -87,21 +83,9 @@ $bill['patron']['id'] = $bill['shortname'];
 # Eliminate the fields we no longer need.
 unset($bill['name'], $bill['shortname'], $bill['party'], $bill['id']);
 
-
-
-
 # Send an HTTP header defining the content as JSON.
 header('Content-type: application/json');
 header("Access-Control-Allow-Origin: *");
 
-# Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
-# JSON in parentheses.
-if (isset($callback))
-{
-    echo $callback.' (';
-}
+# Send the JSON.
 echo json_encode($bill);
-if (isset($callback))
-{
-    echo ');';
-}

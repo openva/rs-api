@@ -26,10 +26,6 @@ $database->connect_old();
 
 # LOCALIZE VARIABLES
 $section = mysql_escape_string(urldecode($_REQUEST['section']));
-if (isset($_REQUEST['callback']) && !empty($_REQUEST['callback']))
-{
-    $callback = $_REQUEST['callback'];
-}
 
 # Send an HTTP header defining the content as JSON.
 header('Content-type: application/json');
@@ -116,14 +112,5 @@ $clips = array_values($clips);
 # Make this an object.
 $clips = (object) $clips;
 
-# Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
-# JSON in parentheses.
-if (isset($callback))
-{
-    echo $callback.' (';
-}
+# Send the JSON.
 echo json_encode($clips);
-if (isset($callback))
-{
-    echo ');';
-}

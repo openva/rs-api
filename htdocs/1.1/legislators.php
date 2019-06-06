@@ -34,10 +34,6 @@ if (isset($_GET['year']) && strlen($_GET['year']) == 4 && is_numeric($_GET['year
 {
     $year = $_GET['year'];
 }
-if (isset($_GET['callback']) && strlen($_GET['callback']) < 32)
-{
-    $callback = $_GET['callback'];
-}
 
 /*
  *  Send an HTTP header defining the content as JSON.
@@ -119,15 +115,6 @@ else
 }
 
 /*
- * Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
- * JSON in parentheses.
+ * Send the JSON.
  */
-if (isset($callback))
-{
-    echo $callback.' (';
-}
 echo json_encode($legislators);
-if (isset($callback))
-{
-    echo ');';
-}

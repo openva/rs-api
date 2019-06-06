@@ -25,10 +25,6 @@ require_once 'functions.inc.php';
 # LOCALIZE VARIABLES
 $year = mysql_escape_string($_REQUEST['year']);
 $bill = mysql_escape_string(strtolower($_REQUEST['bill']));
-if (isset($_REQUEST['callback']))
-{
-    $callback = $_REQUEST['callback'];
-}
 
 # Send an HTTP header defining the content as JSON.
 header('Content-type: application/json');
@@ -72,14 +68,5 @@ else
     header('Cache-Control: max-age=0, public');
 }
 
-# Send the JSON. If a callback has been specified, prefix the JSON with that callback and wrap the
-# JSON in parentheses.
-if (isset($callback))
-{
-    echo $callback.' (';
-}
+# Send the JSON.
 echo json_encode($bill);
-if (isset($callback))
-{
-    echo ');';
-}
