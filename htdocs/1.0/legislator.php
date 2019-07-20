@@ -128,11 +128,5 @@ if (mysql_num_rows($result) > 0)
 $legislator['id'] = $legislator['shortname'];
 unset($legislator['shortname']);
 
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
-
 # Send the JSON.
 echo json_encode($legislator);

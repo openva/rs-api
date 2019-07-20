@@ -27,13 +27,6 @@ $database->connect_old();
 # LOCALIZE VARIABLES
 $shortname = mysql_real_escape_string($_GET['shortname']);
 
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
-
-
 # Create a new legislator object.
 $leg = new Legislator();
 

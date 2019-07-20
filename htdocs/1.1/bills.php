@@ -28,12 +28,6 @@ $database->connect_old();
 # LOCALIZE VARIABLES
 $year = mysql_escape_string($_REQUEST['year']);
 
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
-
 # Select the bill data from the database.
 $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status, bills.outcome,
 		bills.catch_line AS title, representatives.name_formatted AS patron,

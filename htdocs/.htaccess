@@ -13,4 +13,7 @@ php_flag display_startup_errors off
 php_flag display_errors off
 php_flag html_errors off
 
+Header add Content-type "application/json"
+Header add Access-Control-Allow-Origin "*"
+
 ErrorDocument 404 /404.json

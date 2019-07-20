@@ -67,11 +67,5 @@ while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
     $bills[] = array_map('stripslashes', $bill);
 }
 
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
-
 # Send the JSON.
 echo json_encode($bills);

@@ -36,16 +36,6 @@ if (isset($_GET['year']) && strlen($_GET['year']) == 4 && is_numeric($_GET['year
 }
 
 /*
- *  Send an HTTP header defining the content as JSON.
- */
-header('Content-type: application/json');
-
-/*
- * Send an HTTP header allowing CORS.
- */
-header("Access-Control-Allow-Origin: *");
-
-/*
  * Select basic legislator data from the database.
  */
 $sql = 'SELECT representatives.id, representatives.shortname, representatives.name,

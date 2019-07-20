@@ -20,16 +20,6 @@ require_once 'functions.inc.php';
  */
 $fragment = mysql_escape_string($_REQUEST['term']);
 
-/*
- * Send an HTTP header defining the content as JSON.
- */
-header('Content-type: application/json');
-
-/*
- * Send an HTTP header allowing CORS.
- */
-header("Access-Control-Allow-Origin: *");
-
 $tags = new Tags;
 $tags->fragment = $fragment;
 $suggestions = $tags->get_suggestions();

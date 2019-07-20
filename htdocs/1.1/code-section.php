@@ -27,12 +27,6 @@ $database->connect_old();
 # LOCALIZE VARIABLES
 $section = mysql_escape_string(urldecode($_REQUEST['section']));
 
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
-
 # Select the bill data from the database.
 // Use proper bill number sorting
 $sql = 'SELECT sessions.year, bills.number, bills.catch_line, bills.summary, bills.outcome,

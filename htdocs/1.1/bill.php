@@ -26,12 +26,6 @@ require_once 'functions.inc.php';
 $year = mysql_escape_string($_REQUEST['year']);
 $bill = mysql_escape_string(strtolower($_REQUEST['bill']));
 
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
-
 $bill2 = new Bill2;
 $bill2->id = $bill2->getid($year, $bill);
 if ($bill2->id === FALSE)

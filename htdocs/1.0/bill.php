@@ -83,9 +83,5 @@ $bill['patron']['id'] = $bill['shortname'];
 # Eliminate the fields we no longer need.
 unset($bill['name'], $bill['shortname'], $bill['party'], $bill['id']);
 
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-header("Access-Control-Allow-Origin: *");
-
 # Send the JSON.
 echo json_encode($bill);

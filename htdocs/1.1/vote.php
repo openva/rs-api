@@ -21,16 +21,6 @@ require_once 'functions.inc.php';
 $year = mysql_escape_string($_REQUEST['year']);
 $lis_id = mysql_escape_string($_REQUEST['lis_id']);
 
-/*
- * Send an HTTP header defining the content as JSON.
- */
-header('Content-type: application/json');
-
-/*
- * Send an HTTP header allowing CORS.
- */
-header("Access-Control-Allow-Origin: *");
-
 $vote_info = new Vote;
 $vote_info->lis_id = $lis_id;
 $vote_info->session_year = $year;

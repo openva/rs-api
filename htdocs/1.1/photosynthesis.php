@@ -24,12 +24,6 @@ $database->connect_old();
 # LOCALIZE VARIABLES
 $hash = mysql_escape_string(urldecode($_REQUEST['hash']));
 
-# Send an HTTP header defining the content as JSON.
-header('Content-type: application/json');
-
-# Send an HTTP header allowing CORS.
-header("Access-Control-Allow-Origin: *");
-
 # Get this portfolio's basic data.
 $sql = 'SELECT dashboard_portfolios.id, dashboard_portfolios.hash, dashboard_portfolios.name,
 		dashboard_portfolios.notes, users.name AS user_name, dashboard_user_data.organization,
