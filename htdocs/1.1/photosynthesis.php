@@ -39,7 +39,7 @@ $result = mysql_query($sql);
 # If this portfolio doesn't exist or isn't visible.
 if (mysql_num_rows($result) == 0)
 {
-    header("Status: 404 Not Found");
+    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
     $message = array('error' =>
         array('message' => 'No Portfolio Found',
             'details' => 'Portfolio ' . $hash . ' does not exist.'));

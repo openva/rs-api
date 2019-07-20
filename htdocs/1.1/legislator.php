@@ -34,7 +34,7 @@ $leg = new Legislator();
 $leg_id = $leg->getid($shortname);
 if ($leg_id === FALSE)
 {
-    header("Status: 404 Not Found\n\r");
+    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
     readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
 }

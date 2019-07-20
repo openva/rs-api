@@ -30,7 +30,7 @@ $bill2 = new Bill2;
 $bill2->id = $bill2->getid($year, $bill);
 if ($bill2->id === FALSE)
 {
-    header('HTTP/1.0 404 Not Found');
+    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
     readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
 }
