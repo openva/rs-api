@@ -35,6 +35,7 @@ $leg_id = $leg->getid($shortname);
 if ($leg_id === FALSE)
 {
     header("Status: 404 Not Found\n\r");
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
 }
 

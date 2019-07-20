@@ -28,6 +28,7 @@ $vote = $vote_info->get_aggregate();
 if ($vote === FALSE)
 {
     header('HTTP/1.0 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
 }
 
