@@ -22,6 +22,8 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
+header('Content-type: application/json');
+
 # LOCALIZE VARIABLES
 $year = mysql_escape_string($_REQUEST['year']);
 $bill = mysql_escape_string(strtolower($_REQUEST['bill']));
