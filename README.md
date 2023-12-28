@@ -1,7 +1,7 @@
 # Richmond Sunlight API
 The RESTful API for Richmond Sunlight.
 
-[![Code Climate](https://codeclimate.com/github/openva/rs-api/badges/gpa.svg)](https://codeclimate.com/github/openva/rs-machine) [![Build Status](https://travis-ci.org/openva/rs-api.svg?branch=master)](https://travis-ci.org/openva/rs-machine)
+[![Code Climate](https://codeclimate.com/github/openva/rs-api/badges/gpa.svg)](https://codeclimate.com/github/openva/rs-machine) [![Deploy Process](https://github.com/openva/rs-api/actions/workflows/deploy.yml/badge.svg)](https://github.com/openva/rs-api/actions/workflows/deploy.yml)
 
 ## Purpose
 This is the API for [Richmond Sunlight](https://www.richmondsunlight.com/), used both by third parties and by [the site itself](/openva/richmondsunlight.com/). Only the bill and legislator pages consume the API, although those two pages comprise the great majority of the site traffic.
