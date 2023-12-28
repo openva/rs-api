@@ -40,8 +40,6 @@ jobs:
         with:
           name: codebase
           path: .
-    outputs:
-      github_branch: ${{ steps.get_branch.outputs.github_branch }}
 
   deploy:
     runs-on: ubuntu-20.04
@@ -58,7 +56,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: us-east-1
       - name: Deploy via CodeDeploy
-        if: ${{ needs.build.outputs.github_branch == 'master' }}
         run: |
           aws deploy push --application-name RS-API \
             --s3-location s3://deploy.richmondsunlight.com/rs-api-master.zip \
