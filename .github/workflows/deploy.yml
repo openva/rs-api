@@ -32,8 +32,6 @@ jobs:
       - run: find cron/*.php -print0 |xargs -0 -n1 -P8 php5.6 -l
       - run: >-
           ./deploy/config_variables.sh
-          && ./deploy/aws_credentials.sh
-          && ./deploy/sftp_credentials.sh
           && zip -qr latest.zip rs-machine . --exclude *.git* *.scannerwork*
           && mkdir -p upload
           && mv latest.zip upload/latest.zip
