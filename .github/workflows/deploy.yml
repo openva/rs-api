@@ -29,7 +29,6 @@ jobs:
       - run: mkdir includes/
       - run: cp richmondsunlight.com/htdocs/includes/*.php includes/
       - run: rm -Rf richmondsunlight.com
-      - run: composer install
       - run: find cron/*.php -print0 |xargs -0 -n1 -P8 php5.6 -l
       - run: >-
           ./deploy/config_variables.sh
