@@ -1,0 +1,74 @@
+name: Deploy Process
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: Firenza/secrets-to-env@v1.1.0
+        with:
+          secrets: ${{ toJSON(secrets) }}
+      - name: Specify PHP version
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '5.6'
+      - name: Make branch name available as Bash variable
+        run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+      - run: >-
+          sudo apt-get update && 
+          sudo apt-get install -y awscli php5.6-cli php5.6-curl php5.6-memcached php5.6-mysql yarn zip
+      - uses: actions/checkout@v2
+      - run: sudo apt-get update -qq
+      - run: git clone -b deploy https://github.com/openva/richmondsunlight.com.git
+      - run: cd richmondsunlight.com && composer install && cd ..
+      - run: mkdir includes/
+      - run: cp richmondsunlight.com/htdocs/includes/*.php includes/
+      - run: rm -Rf richmondsunlight.com
+      - run: composer install
+      - run: find cron/*.php -print0 |xargs -0 -n1 -P8 php5.6 -l
+      - run: >-
+          ./deploy/config_variables.sh
+          && ./deploy/aws_credentials.sh
+          && ./deploy/sftp_credentials.sh
+          && zip -qr latest.zip rs-machine . --exclude *.git* *.scannerwork*
+          && mkdir -p upload
+          && mv latest.zip upload/latest.zip
+      - run: cd deploy/tests/ && ./legislator.sh && cd ../..
+      - name: Save secret-populated code for a subsequent deploy step
+        uses: actions/upload-artifact@v4
+        with:
+          name: codebase
+          path: .
+    outputs:
+      github_branch: ${{ steps.get_branch.outputs.github_branch }}
+
+  deploy:
+    runs-on: ubuntu-20.04
+    needs: build # Don't deploy unless the build succeeds
+    steps:
+      - name: Get the secret-populated code
+        uses: actions/download-artifact@v4
+        with:
+          name: codebase
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: us-east-1
+      - name: Deploy via CodeDeploy
+        if: ${{ needs.build.outputs.github_branch == 'master' }}
+        run: |
+          aws deploy push --application-name RS-API \
+            --s3-location s3://deploy.richmondsunlight.com/rs-api-master.zip \
+            --ignore-hidden-files
+          aws deploy create-deployment \
+            --application-name RS-API \
+            --deployment-group-name RS-API-Fleet \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --s3-location bucket=deploy.richmondsunlight.com,key=rs-api-master.zip,bundleType=zip
