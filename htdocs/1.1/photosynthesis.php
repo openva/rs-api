@@ -20,7 +20,7 @@ header('Content-type: application/json');
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific
 # page.
-$database = new Database;
+$database = new Database();
 $database->connect_old();
 
 # LOCALIZE VARIABLES
@@ -39,9 +39,8 @@ $sql = 'SELECT dashboard_portfolios.id, dashboard_portfolios.hash, dashboard_por
 $result = mysql_query($sql);
 
 # If this portfolio doesn't exist or isn't visible.
-if (mysql_num_rows($result) == 0)
-{
-    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+if (mysql_num_rows($result) == 0) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     $message = array('error' =>
         array('message' => 'No Portfolio Found',
             'details' => 'Portfolio ' . $hash . ' does not exist.'));
@@ -52,19 +51,15 @@ if (mysql_num_rows($result) == 0)
 
 $portfolio = mysql_fetch_array($result, MYSQL_ASSOC);
 $portfolio = array_map('stripslashes', $portfolio);
-    
+
 # Make the user closer to anonymous.
 $tmp = explode(' ', $portfolio['user_name']);
-if (count($tmp) > 1)
-{
-    $portfolio['user_name'] = $tmp[0].' '.$tmp[1]{0}.'.';
-}
-else
-{
+if (count($tmp) > 1) {
+    $portfolio['user_name'] = $tmp[0] . ' ' . $tmp[1]{0} . '.';
+} else {
     $portfolio['user_name'] = $tmp[0];
 }
-if (isset($portfolio['organization']))
-{
+if (isset($portfolio['organization'])) {
     unset($portfolio['user_name']);
 }
 unset($portfolio['id'], $portfolio['hash'], $portfolio['name'], $portfolio['notes']);
@@ -99,8 +94,7 @@ $sql = 'SELECT bills.number, bills.catch_line, sessions.year, dashboard_bills.no
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
 $result = mysql_query($sql);
-if (mysql_num_rows($result) == 0)
-{
+if (mysql_num_rows($result) == 0) {
     header("Status: 404 Not Found");
     $message = array('error' =>
         array('message' => 'No Bills Found',
@@ -111,9 +105,8 @@ if (mysql_num_rows($result) == 0)
 
 # Build up a list of all bills.
 $portfolio['bills'] = array();
-while ($bill = mysql_fetch_assoc($result))
-{
-    $bill['url'] = 'https://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
+while ($bill = mysql_fetch_assoc($result)) {
+    $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $portfolio['bills'][] = array_map('stripslashes', $bill);
 }

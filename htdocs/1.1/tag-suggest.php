@@ -7,7 +7,6 @@
  * Displays an autocomplete list of tags, based on the text entered so far.
  **/
 
-
 /*
  * Includes
  */
@@ -22,11 +21,10 @@ header('Content-type: application/json');
  */
 $fragment = mysql_escape_string($_REQUEST['term']);
 
-$tags = new Tags;
+$tags = new Tags();
 $tags->fragment = $fragment;
 $suggestions = $tags->get_suggestions();
-if ($suggestions === FALSE)
-{
+if ($suggestions === false) {
     header('HTTP/1.0 404 Not Found');
     exit();
 }

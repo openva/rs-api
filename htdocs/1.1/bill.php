@@ -18,8 +18,8 @@
 
 # INCLUDES
 # Include any files or libraries that are necessary for this specific page to function.
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
 header('Content-type: application/json');
@@ -28,11 +28,10 @@ header('Content-type: application/json');
 $year = mysql_escape_string($_REQUEST['year']);
 $bill = mysql_escape_string(strtolower($_REQUEST['bill']));
 
-$bill2 = new Bill2;
+$bill2 = new Bill2();
 $bill2->id = $bill2->getid($year, $bill);
-if ($bill2->id === FALSE)
-{
-    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+if ($bill2->id === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
 }
@@ -43,8 +42,7 @@ $bill = $bill2->info();
 # Get a list of changes.
 $bill2->text = $bill['full_text'];
 $changes = $bill2->list_changes();
-if ($changes !== FALSE)
-{
+if ($changes !== false) {
     $bill['changes'] = $changes;
 }
 
@@ -56,12 +54,9 @@ $video->bill_id = $bill['id'];
 $bill['video'] = $video->by_bill();
 
 # If this is old data, we can cache it for up to a month.
-if ($bill['session_id'] != SESSION_ID)
-{
-    header('Cache-Control: max-age='.(60*60*24*30.5).', public');
-}
-else
-{
+if ($bill['session_id'] != SESSION_ID) {
+    header('Cache-Control: max-age=' . (60 * 60 * 24 * 30.5) . ', public');
+} else {
     header('Cache-Control: max-age=0, public');
 }
 

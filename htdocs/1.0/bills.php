@@ -16,8 +16,8 @@
 
 # INCLUDES
 # Include any files or libraries that are necessary for this specific page to function.
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
 header('Content-type: application/json');
@@ -39,13 +39,12 @@ $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status,
 			ON bills.chief_patron_id=representatives.id
 		LEFT JOIN sessions
 			ON bills.session_id=sessions.id
-		WHERE sessions.year='.$year.'
+		WHERE sessions.year=' . $year . '
 		ORDER BY bills.chamber DESC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
 $result = mysql_query($sql);
-if (mysql_num_rows($result) == 0)
-{
+if (mysql_num_rows($result) == 0) {
     json_error('Richmond Sunlight has no record of bills for ' . $year . '.');
     exit();
 }
@@ -54,8 +53,7 @@ $bills = array();
 
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
-{
+while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
     $bill = array_map('stripslashes', $bill);
 
     # Assign the patron data to a subelement.
@@ -64,7 +62,7 @@ while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
 
     # Eliminate the fields we no longer need.
     unset($bill['patron'], $bill['patron_id']);
-    
+
 
     $bills[] = $bill;
 }

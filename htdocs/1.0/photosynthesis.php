@@ -15,8 +15,8 @@
 # INCLUDES
 # Include any files or libraries that are necessary for this specific
 # page to function.
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
 header('Content-type: application/json');
@@ -40,31 +40,27 @@ $sql = 'SELECT bills.number, sessions.year, dashboard_bills.notes
 			ON dashboard_bills.bill_id=bills.id
 		LEFT JOIN sessions
 			ON bills.session_id=sessions.id
-		WHERE dashboard_portfolios.hash="'.$hash.'"
-		AND bills.session_id='.SESSION_ID.'
+		WHERE dashboard_portfolios.hash="' . $hash . '"
+		AND bills.session_id=' . SESSION_ID . '
 		ORDER BY bills.chamber DESC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
 $result = mysql_query($sql);
-if (mysql_num_rows($result) == 0)
-{
-
+if (mysql_num_rows($result) == 0) {
     header('HTTP/1.0 404 Not Found');
     header('Content-type: application/json');
     $message = array('error' =>
         array('message' => 'No Bills Found',
-            'details' => 'No bills were found in portfolio '.$hash.'.'));
+            'details' => 'No bills were found in portfolio ' . $hash . '.'));
     echo json_encode($message);
     exit;
-
 }
 
 # Build up a listing of all bills.
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
-{
-    $bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
+while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    $bill['url'] = 'http://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $bills[] = array_map('stripslashes', $bill);
 }

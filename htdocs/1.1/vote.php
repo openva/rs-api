@@ -7,12 +7,11 @@
  * Displays the outcome of a vote for a given year
  **/
 
-
 /*
  * Includes
  */
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
 header('Content-type: application/json');
@@ -23,13 +22,12 @@ header('Content-type: application/json');
 $year = mysql_escape_string($_REQUEST['year']);
 $lis_id = mysql_escape_string($_REQUEST['lis_id']);
 
-$vote_info = new Vote;
+$vote_info = new Vote();
 $vote_info->lis_id = $lis_id;
 $vote_info->session_year = $year;
 $vote = $vote_info->get_aggregate();
-if ($vote === FALSE)
-{
-    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+if ($vote === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
 }

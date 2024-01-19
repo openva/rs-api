@@ -16,8 +16,8 @@
  * INCLUDES
  * Include any files or libraries that are necessary for this specific page to function.
  */
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
 header('Content-type: application/json');
@@ -26,14 +26,13 @@ header('Content-type: application/json');
  * DECLARATIVE FUNCTIONS
  * Run those functions that are necessary prior to loading this specific page.
  */
-$database = new Database;
+$database = new Database();
 $database->connect_old();
 
 /*
  * LOCALIZE VARIABLES
  */
-if (isset($_GET['year']) && strlen($_GET['year']) == 4 && is_numeric($_GET['year']))
-{
+if (isset($_GET['year']) && strlen($_GET['year']) == 4 && is_numeric($_GET['year'])) {
     $year = $_GET['year'];
 }
 
@@ -47,8 +46,7 @@ $sql = 'SELECT representatives.id, representatives.shortname, representatives.na
 		FROM representatives
 		LEFT JOIN districts
 			ON representatives.district_id=districts.id ';
-if (isset($year))
-{
+if (isset($year)) {
     $sql .= 'WHERE representatives.date_started <= ' . $year . '-01-01
 		AND
 			(representatives.date_ended >= ' . $year . '-01-01
@@ -58,25 +56,19 @@ if (isset($year))
 $sql .= 'ORDER BY representatives.name ASC';
 
 $result = mysql_query($sql);
-if (mysql_num_rows($result) > 0)
-{
-
+if (mysql_num_rows($result) > 0) {
     $legislators = array();
 
-    while ($legislator = mysql_fetch_array($result, MYSQL_ASSOC))
-    {
-
+    while ($legislator = mysql_fetch_array($result, MYSQL_ASSOC)) {
         $legislator = array_map('stripslashes', $legislator);
 
         /*
          * Eliminate any useless data.
          */
-        if ($legislator['date_started'] == '0000-00-00')
-        {
+        if ($legislator['date_started'] == '0000-00-00') {
             unset($legislator['date_started']);
         }
-        if ($legislator['date_ended'] == '0000-00-00')
-        {
+        if ($legislator['date_ended'] == '0000-00-00') {
             unset($legislator['date_ended']);
         }
 
@@ -93,16 +85,13 @@ if (mysql_num_rows($result) > 0)
         unset($legislator['shortname']);
 
         $legislators[] = $legislator;
-
     }
-
 }
 
 /*
  * If no legislators can be found.
  */
-else
-{
+else {
     $legislators = 'Richmond Sunlight has no record of any legislators. Yes, we are also troubled by this.';
 }
 

@@ -19,8 +19,8 @@
 
 # INCLUDES
 # Include any files or libraries that are necessary for this specific page to function.
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
 header('Content-type: application/json');
@@ -45,10 +45,9 @@ $sql = 'SELECT bills.id, bills.number, bills.current_chamber, bills.status, bill
 			ON representatives.district_id=districts.id
 		LEFT JOIN sessions
 			ON bills.session_id=sessions.id
-		WHERE bills.number = "'.$bill.'" AND sessions.year='.$year;
+		WHERE bills.number = "' . $bill . '" AND sessions.year=' . $year;
 $result = mysql_query($sql);
-if (mysql_num_rows($result) == 0)
-{
+if (mysql_num_rows($result) == 0) {
     json_error('Richmond Sunlight has no record of bill ' . strtoupper($bill) . ' in ' . $year . '.');
     exit();
 }
@@ -63,10 +62,8 @@ $sql = 'SELECT tag
 		WHERE bill_id=' . $bill['id'] . '
 		ORDER BY tag ASC';
 $result = mysql_query($sql);
-if (mysql_num_rows($result) > 0)
-{
-    while ($tag = mysql_fetch_array($result, MYSQL_ASSOC))
-    {
+if (mysql_num_rows($result) > 0) {
+    while ($tag = mysql_fetch_array($result, MYSQL_ASSOC)) {
         $bill['tags'][] = $tag;
     }
 }

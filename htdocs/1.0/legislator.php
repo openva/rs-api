@@ -14,8 +14,8 @@
 
 # INCLUDES
 # Include any files or libraries that are necessary for this specific page to function.
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
 header('Content-type: application/json');
@@ -42,10 +42,9 @@ $sql = 'SELECT representatives.id, representatives.shortname, representatives.na
 		FROM representatives
 		LEFT JOIN districts
 			ON representatives.district_id=districts.id
-		WHERE shortname = "'.$shortname.'"';
+		WHERE shortname = "' . $shortname . '"';
 $result = @mysql_query($sql);
-if (mysql_num_rows($result) == 0)
-{
+if (mysql_num_rows($result) == 0) {
     json_error('Richmond Sunlight has no record of legislator ' . $shortname . '.');
     exit();
 }
@@ -54,32 +53,25 @@ $legislator = @mysql_fetch_array($result, MYSQL_ASSOC);
 $legislator = array_map('stripslashes', $legislator);
 
 # Eliminate any useless data.
-if ($legislator['birthday'] == '0000-00-00')
-{
+if ($legislator['birthday'] == '0000-00-00') {
     unset($legislator['birthday']);
 }
-if ($legislator['date_started'] == '0000-00-00')
-{
+if ($legislator['date_started'] == '0000-00-00') {
     unset($legislator['date_started']);
 }
-if ($legislator['date_ended'] == '0000-00-00')
-{
+if ($legislator['date_ended'] == '0000-00-00') {
     unset($legislator['date_ended']);
 }
-if (empty($legislator['phone_district']))
-{
+if (empty($legislator['phone_district'])) {
     unset($legislator['phone_district']);
 }
-if (empty($legislator['phone_richmond']))
-{
+if (empty($legislator['phone_richmond'])) {
     unset($legislator['phone_richmond']);
 }
-if (empty($legislator['address_district']))
-{
+if (empty($legislator['address_district'])) {
     unset($legislator['address_district']);
 }
-if (empty($legislator['address_richmond']))
-{
+if (empty($legislator['address_richmond'])) {
     unset($legislator['address_richmond']);
 }
 
@@ -88,16 +80,13 @@ $sql = 'SELECT committees.name, committee_members.position
 		FROM committees
 		LEFT JOIN committee_members
 			ON committees.id = committee_members.committee_id
-		WHERE committee_members.representative_id = '.$legislator['id'].'
+		WHERE committee_members.representative_id = ' . $legislator['id'] . '
 		AND (date_ended = "0000-00-00" OR date_ended IS NULL)';
 $result = mysql_query($sql);
-if (mysql_num_rows($result) > 0)
-{
-    while ($committee = mysql_fetch_array($result, MYSQL_ASSOC))
-    {
+if (mysql_num_rows($result) > 0) {
+    while ($committee = mysql_fetch_array($result, MYSQL_ASSOC)) {
         $committee = array_map('stripslashes', $committee);
-        if (empty($committee['position']))
-        {
+        if (empty($committee['position'])) {
             $committee['position'] = 'member';
         }
         $legislator['committees'][] = $committee;
@@ -110,17 +99,15 @@ $sql = 'SELECT bills.number, sessions.year, bills.catch_line AS title, bills.dat
 		FROM bills
 		LEFT JOIN sessions
 			ON bills.session_id=sessions.id
-		WHERE bills.chief_patron_id='.$legislator['id'].'
+		WHERE bills.chief_patron_id=' . $legislator['id'] . '
 		ORDER BY sessions.year ASC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
 $result = mysql_query($sql);
-if (mysql_num_rows($result) > 0)
-{
-    while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
-    {
-        $bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year']
-            .'/'.$bill['number'].'/';
+if (mysql_num_rows($result) > 0) {
+    while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+        $bill['url'] = 'http://www.richmondsunlight.com/bill/' . $bill['year']
+            . '/' . $bill['number'] . '/';
         $bill['number'] = strtoupper($bill['number']);
         $legislator['bills'][] = $bill;
     }

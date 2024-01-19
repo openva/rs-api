@@ -14,8 +14,8 @@
 
 # INCLUDES
 # Include any files or libraries that are necessary for this specific page to function.
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
 header('Content-type: application/json');
@@ -23,7 +23,7 @@ header('Content-type: application/json');
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific
 # page.
-$database = new Database;
+$database = new Database();
 $database->connect_old();
 
 # LOCALIZE VARIABLES
@@ -34,9 +34,8 @@ $leg = new Legislator();
 
 # Get the ID for this shortname.
 $leg_id = $leg->getid($shortname);
-if ($leg_id === FALSE)
-{
-    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+if ($leg_id === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
 }
@@ -60,16 +59,14 @@ $sql = 'SELECT bills.id, bills.number, bills.catch_line,
             ON bills.session_id=sessions.id
         LEFT JOIN committees
             ON bills.last_committee_id = committees.id
-        WHERE bills.chief_patron_id="'.$legislator['id'].'"
+        WHERE bills.chief_patron_id="' . $legislator['id'] . '"
         ORDER BY sessions.year DESC,
         SUBSTRING(bills.number FROM 1 FOR 2) ASC,
         CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
 $result = mysql_query($sql);
-if (mysql_num_rows($result) > 0)
-{
+if (mysql_num_rows($result) > 0) {
     $legislator['bills'] = array();
-    while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
-    {
+    while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
         $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/'
             . $bill['number'] . '/';
         $bill['number'] = strtoupper($bill['number']);

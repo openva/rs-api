@@ -13,8 +13,8 @@
 
 # INCLUDES
 # Include any files or libraries that are necessary for this specific page to function.
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/settings.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'].'/includes/functions.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once 'functions.inc.php';
 
 header('Content-type: application/json');
@@ -40,9 +40,7 @@ $sql = 'SELECT sessions.year, bills.number, bills.catch_line, bills.summary, bil
 		WHERE bills_section_numbers.section_number =  "' . $section . '"
 		ORDER BY year ASC, bills.number ASC';
 $result = mysql_query($sql);
-if (mysql_num_rows($result) == 0)
-{
-
+if (mysql_num_rows($result) == 0) {
     header('HTTP/1.0 404 Not Found');
     header('Content-type: application/json');
     $message = array('error' =>
@@ -50,7 +48,6 @@ if (mysql_num_rows($result) == 0)
             'details' => 'No bills were found that cite section ' . $section . '.'));
     echo json_encode($message);
     exit;
-
 }
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
@@ -59,21 +56,18 @@ $bill = mysql_fetch_array($result, MYSQL_ASSOC);
 # Build up a list of all bills.
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC))
-{
-    $bill['url'] = 'http://www.richmondsunlight.com/bill/'.$bill['year'].'/'.$bill['number'].'/';
+while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    $bill['url'] = 'http://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $bills[] = array_map('stripslashes', $bill);
 }
 
 # And now get a list of changes for each bill.
-$bill2 = new Bill2;
-foreach ($bills as &$bill)
-{
+$bill2 = new Bill2();
+foreach ($bills as &$bill) {
     $bill2->text = $bill['text'];
     $changes = $bill2->list_changes();
-    if ($changes !== FALSE)
-    {
+    if ($changes !== false) {
         $bill['changes'] = $changes;
     }
     unset($bill['text']);
