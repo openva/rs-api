@@ -3,3 +3,4 @@ htdocs/includes/
 .env
 htdocs/getinfo.php
 htdocs/test.php
+.DS_Store
