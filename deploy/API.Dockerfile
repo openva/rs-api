@@ -1,4 +1,5 @@
-FROM php:5.6.39-apache
+FROM php:5-apache
+
 RUN docker-php-ext-install mysqli && docker-php-ext-install mysql && a2enmod rewrite && a2enmod expires && a2enmod headers
 
 RUN apt --fix-broken install
