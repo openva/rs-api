@@ -4,14 +4,11 @@ RUN docker-php-ext-install mysqli && docker-php-ext-install mysql && a2enmod rew
 
 RUN apt --fix-broken install
 RUN apt-get update
-RUN apt-get install -y git zip libmemcached-dev zlib1g-dev \
-    && pecl install memcached-2.2.0 \
-	&& docker-php-ext-enable memcached
+RUN apt-get install -y git zip zlib1g-dev
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-RUN echo "extension=memcached.so" >> /usr/local/etc/php/php.ini
 
 WORKDIR /var/www/
 
