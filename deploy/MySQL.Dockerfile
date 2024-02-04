@@ -12,7 +12,7 @@ ENV MYSQL_DATABASE richmondsunlight
 ENV MYSQL_USER ricsun
 ENV MYSQL_PASSWORD password
 
-RUN apt-get update && apt-get -y install vim
+RUN apt-get update && rm -rf /var/lib/apt/lists/
 
 EXPOSE 3306
 
