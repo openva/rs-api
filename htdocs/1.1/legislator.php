@@ -74,13 +74,6 @@ if (mysql_num_rows($result) > 0) {
     }
 }
 
-# Create a new statistics object.
-$stats = new Statistics();
-$activity = $stats->legislator_activity($legislator['id']);
-if ($activity !== false) {
-    $legislator['activity'] = $activity;
-}
-
 # We publicly call the shortname the "ID," so swap them out.
 $legislator['rs_id'] = $legislator['id'];
 $legislator['id'] = $legislator['shortname'];
