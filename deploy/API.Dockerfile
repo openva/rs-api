@@ -6,7 +6,7 @@ RUN echo "deb http://archive.debian.org/debian/ stretch main non-free contrib" >
     && echo "deb http://archive.debian.org/debian-security/ stretch/updates main" >> /etc/apt/sources.list \
     && echo "deb-src http://archive.debian.org/debian-security/ stretch/updates main" >> /etc/apt/sources.list
 
-RUN docker-php-ext-install mysqli && docker-php-ext-install mysql && a2enmod rewrite && a2enmod expires && a2enmod headers
+RUN docker-php-ext-install mysqli mysql pdo pdo_mysql && a2enmod rewrite && a2enmod expires && a2enmod headers
 
 RUN apt --fix-broken install
 RUN apt-get update
