@@ -27,7 +27,7 @@ $database = new Database();
 $database->connect_old();
 
 # LOCALIZE VARIABLES
-$section = mysqli_escape_string($GLOBALS['db'], urldecode($_REQUEST['section']));
+$section = mysql_escape_string(urldecode($_REQUEST['section']));
 
 # Select the bill data from the database.
 // Use proper bill number sorting
@@ -42,8 +42,8 @@ $sql = 'SELECT sessions.year, bills.number, bills.catch_line, bills.summary, bil
 			ON bills.chief_patron_id = representatives.id
 		WHERE bills_section_numbers.section_number =  "' . $section . '"
 		ORDER BY year ASC, bills.number ASC';
-$result = mysqli_query($GLOBALS['db'], $sql);
-if (mysqli_num_rows($result) == 0) {
+$result = mysql_query($sql);
+if (mysql_num_rows($result) == 0) {
     // What error SHOULD this return?
     header("Status: 404 Not Found");
     $message = array('error' =>
@@ -54,12 +54,12 @@ if (mysqli_num_rows($result) == 0) {
 }
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-$bill = mysqli_fetch_array($result, MYSQL_ASSOC);
+$bill = mysql_fetch_array($result, MYSQL_ASSOC);
 
 # Build up a listing of all bills.
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysqli_fetch_array($result, MYSQL_ASSOC)) {
+while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
     $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $bills[] = array_map('stripslashes', $bill);

@@ -24,7 +24,7 @@ $database = new Database();
 $database->connect_old();
 
 # LOCALIZE VARIABLES
-$hash = mysqli_escape_string($GLOBALS['db'], urldecode($_REQUEST['hash']));
+$hash = mysql_escape_string(urldecode($_REQUEST['hash']));
 
 # Get this portfolio's basic data.
 $sql = 'SELECT dashboard_portfolios.id, dashboard_portfolios.hash, dashboard_portfolios.name,
@@ -36,10 +36,10 @@ $sql = 'SELECT dashboard_portfolios.id, dashboard_portfolios.hash, dashboard_por
 		LEFT JOIN dashboard_user_data
 			ON users.id = dashboard_user_data.user_id
 		WHERE dashboard_portfolios.public = "y" AND dashboard_portfolios.hash="' . $hash . '"';
-$result = mysqli_query($GLOBALS['db'], $sql);
+$result = mysql_query($sql);
 
 # If this portfolio doesn't exist or isn't visible.
-if (mysqli_num_rows($result) == 0) {
+if (mysql_num_rows($result) == 0) {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     $message = array('error' =>
         array('message' => 'No Portfolio Found',
@@ -49,7 +49,7 @@ if (mysqli_num_rows($result) == 0) {
 }
 
 
-$portfolio = mysqli_fetch_array($result, MYSQL_ASSOC);
+$portfolio = mysql_fetch_array($result, MYSQL_ASSOC);
 $portfolio = array_map('stripslashes', $portfolio);
 
 # Make the user closer to anonymous.
@@ -93,8 +93,8 @@ $sql = 'SELECT bills.number, bills.catch_line, sessions.year, dashboard_bills.no
 		ORDER BY bills.chamber DESC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysqli_query($GLOBALS['db'], $sql);
-if (mysqli_num_rows($result) == 0) {
+$result = mysql_query($sql);
+if (mysql_num_rows($result) == 0) {
     header("Status: 404 Not Found");
     $message = array('error' =>
         array('message' => 'No Bills Found',
@@ -105,7 +105,7 @@ if (mysqli_num_rows($result) == 0) {
 
 # Build up a list of all bills.
 $portfolio['bills'] = array();
-while ($bill = mysqli_fetch_assoc($result)) {
+while ($bill = mysql_fetch_assoc($result)) {
     $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $portfolio['bills'][] = array_map('stripslashes', $bill);

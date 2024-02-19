@@ -19,7 +19,7 @@ header('Content-type: application/json');
 /*
  * Localize variables
  */
-$fragment = mysqli_escape_string($GLOBALS['db'], $_REQUEST['term']);
+$fragment = mysql_escape_string($_REQUEST['term']);
 
 $tags = new Tags();
 $tags->fragment = $fragment;
