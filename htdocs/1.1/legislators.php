@@ -55,11 +55,11 @@ if (isset($year)) {
 }
 $sql .= 'ORDER BY representatives.name ASC';
 
-$result = mysql_query($sql);
-if (mysql_num_rows($result) > 0) {
+$result = mysqli_query($GLOBALS['db'], $sql);
+if (mysqli_num_rows($result) > 0) {
     $legislators = array();
 
-    while ($legislator = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    while ($legislator = mysqli_fetch_array($result, MYSQL_ASSOC)) {
         $legislator = array_map('stripslashes', $legislator);
 
         /*

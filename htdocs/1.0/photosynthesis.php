@@ -27,7 +27,7 @@ header('Content-type: application/json');
 @connect_to_db();
 
 # LOCALIZE VARIABLES
-$hash = mysql_escape_string(urldecode($_REQUEST['hash']));
+$hash = mysqli_escape_string($GLOBALS['db'], urldecode($_REQUEST['hash']));
 
 # Select the bill data from the database.
 $sql = 'SELECT bills.number, sessions.year, dashboard_bills.notes
@@ -45,8 +45,8 @@ $sql = 'SELECT bills.number, sessions.year, dashboard_bills.notes
 		ORDER BY bills.chamber DESC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
+$result = mysqli_query($GLOBALS['db'], $sql);
+if (mysqli_num_rows($result) == 0) {
     header('HTTP/1.0 404 Not Found');
     header('Content-type: application/json');
     $message = array('error' =>
@@ -59,7 +59,7 @@ if (mysql_num_rows($result) == 0) {
 # Build up a listing of all bills.
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($bill = mysqli_fetch_array($result, MYSQL_ASSOC)) {
     $bill['url'] = 'http://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $bills[] = array_map('stripslashes', $bill);

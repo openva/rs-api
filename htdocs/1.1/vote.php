@@ -19,8 +19,8 @@ header('Content-type: application/json');
 /*
  * Localize variables
  */
-$year = mysql_escape_string($_REQUEST['year']);
-$lis_id = mysql_escape_string($_REQUEST['lis_id']);
+$year = mysqli_escape_string($GLOBALS['db'], $_REQUEST['year']);
+$lis_id = mysqli_escape_string($GLOBALS['db'], $_REQUEST['lis_id']);
 
 $vote_info = new Vote();
 $vote_info->lis_id = $lis_id;

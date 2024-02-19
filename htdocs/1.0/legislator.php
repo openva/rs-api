@@ -26,7 +26,7 @@ header('Content-type: application/json');
 @connect_to_db();
 
 # LOCALIZE VARIABLES
-$shortname = @mysql_real_escape_string($_GET['shortname']);
+$shortname = mysqli_real_escape_string($GLOBALS['db'], $_GET['shortname']);
 
 # Select general legislator data from the database.
 $sql = 'SELECT representatives.id, representatives.shortname, representatives.name,
@@ -43,13 +43,13 @@ $sql = 'SELECT representatives.id, representatives.shortname, representatives.na
 		LEFT JOIN districts
 			ON representatives.district_id=districts.id
 		WHERE shortname = "' . $shortname . '"';
-$result = @mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
+$result = @mysqli_query($GLOBALS['db'], $sql);
+if (mysqli_num_rows($result) == 0) {
     json_error('Richmond Sunlight has no record of legislator ' . $shortname . '.');
     exit();
 }
 
-$legislator = @mysql_fetch_array($result, MYSQL_ASSOC);
+$legislator = @mysqli_fetch_array($result, MYSQL_ASSOC);
 $legislator = array_map('stripslashes', $legislator);
 
 # Eliminate any useless data.
@@ -82,9 +82,9 @@ $sql = 'SELECT committees.name, committee_members.position
 			ON committees.id = committee_members.committee_id
 		WHERE committee_members.representative_id = ' . $legislator['id'] . '
 		AND (date_ended = "0000-00-00" OR date_ended IS NULL)';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) > 0) {
-    while ($committee = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = mysqli_query($GLOBALS['db'], $sql);
+if (mysqli_num_rows($result) > 0) {
+    while ($committee = mysqli_fetch_array($result, MYSQL_ASSOC)) {
         $committee = array_map('stripslashes', $committee);
         if (empty($committee['position'])) {
             $committee['position'] = 'member';
@@ -103,9 +103,9 @@ $sql = 'SELECT bills.number, sessions.year, bills.catch_line AS title, bills.dat
 		ORDER BY sessions.year ASC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) > 0) {
-    while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = mysqli_query($GLOBALS['db'], $sql);
+if (mysqli_num_rows($result) > 0) {
+    while ($bill = mysqli_fetch_array($result, MYSQL_ASSOC)) {
         $bill['url'] = 'http://www.richmondsunlight.com/bill/' . $bill['year']
             . '/' . $bill['number'] . '/';
         $bill['number'] = strtoupper($bill['number']);

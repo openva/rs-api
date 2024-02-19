@@ -31,8 +31,8 @@ header('Content-type: application/json');
 connect_to_db();
 
 # LOCALIZE VARIABLES
-$year = mysql_escape_string($_REQUEST['year']);
-$bill = mysql_escape_string($_REQUEST['bill']);
+$year = mysqli_escape_string($GLOBALS['db'], $_REQUEST['year']);
+$bill = mysqli_escape_string($GLOBALS['db'], $_REQUEST['bill']);
 
 # Select the bill data from the database.
 $sql = 'SELECT bills.id, bills.number, bills.current_chamber, bills.status, bills.date_introduced,
@@ -46,14 +46,14 @@ $sql = 'SELECT bills.id, bills.number, bills.current_chamber, bills.status, bill
 		LEFT JOIN sessions
 			ON bills.session_id=sessions.id
 		WHERE bills.number = "' . $bill . '" AND sessions.year=' . $year;
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
+$result = mysqli_query($GLOBALS['db'], $sql);
+if (mysqli_num_rows($result) == 0) {
     json_error('Richmond Sunlight has no record of bill ' . strtoupper($bill) . ' in ' . $year . '.');
     exit();
 }
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-$bill = mysql_fetch_array($result, MYSQL_ASSOC);
+$bill = mysqli_fetch_array($result, MYSQL_ASSOC);
 $bill = array_map('stripslashes', $bill);
 
 # Select tags from the database.
@@ -61,9 +61,9 @@ $sql = 'SELECT tag
 		FROM tags
 		WHERE bill_id=' . $bill['id'] . '
 		ORDER BY tag ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) > 0) {
-    while ($tag = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = mysqli_query($GLOBALS['db'], $sql);
+if (mysqli_num_rows($result) > 0) {
+    while ($tag = mysqli_fetch_array($result, MYSQL_ASSOC)) {
         $bill['tags'][] = $tag;
     }
 }

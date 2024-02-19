@@ -28,7 +28,7 @@ header('Content-type: application/json');
 @connect_to_db();
 
 # LOCALIZE VARIABLES
-$year = mysql_escape_string($_REQUEST['year']);
+$year = mysqli_escape_string($GLOBALS['db'], $_REQUEST['year']);
 
 # Select the bill data from the database.
 $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status, bills.outcome,
@@ -43,8 +43,8 @@ $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status,
 		ORDER BY bills.chamber DESC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
+$result = mysqli_query($GLOBALS['db'], $sql);
+if (mysqli_num_rows($result) == 0) {
     json_error('Richmond Sunlight has no record of bills for ' . $year . '.');
     exit();
 }
@@ -53,7 +53,7 @@ $bills = array();
 
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($bill = mysqli_fetch_array($result, MYSQL_ASSOC)) {
     $bill = array_map('stripslashes', $bill);
 
     # Assign the patron data to a subelement.

@@ -27,7 +27,7 @@ $database = new Database();
 $database->connect_old();
 
 # LOCALIZE VARIABLES
-$section = mysql_escape_string(urldecode($_REQUEST['section']));
+$section = mysqli_escape_string($GLOBALS['db'], urldecode($_REQUEST['section']));
 
 # Select the bill data from the database.
 $sql = 'SELECT DISTINCT bills.number AS bill_number, sessions.year, files.date, files.chamber,
@@ -44,8 +44,8 @@ $sql = 'SELECT DISTINCT bills.number AS bill_number, sessions.year, files.date, 
 			ON bills.session_id = sessions.id
 		WHERE bills_section_numbers.section_number = "' . $section . '"
 		ORDER BY files.date ASC, video_clips.time_start ASC ';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
+$result = mysqli_query($GLOBALS['db'], $sql);
+if (mysqli_num_rows($result) == 0) {
     header("Status: 404 Not Found");
     $message = array('error' =>
         array('message' => 'No Video Found',
@@ -55,7 +55,7 @@ if (mysql_num_rows($result) == 0) {
 }
 
 # Build up a list of all video clips
-while ($clip = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($clip = mysqli_fetch_array($result, MYSQL_ASSOC)) {
     $clip['bill_url'] = 'https://www.richmondsunlight.com/bill/' . $clip['year'] . '/'
         . $clip['bill_number'] . '/';
     $clip['bill_number'] = strtoupper($clip['bill_number']);

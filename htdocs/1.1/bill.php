@@ -25,8 +25,8 @@ require_once 'functions.inc.php';
 header('Content-type: application/json');
 
 # LOCALIZE VARIABLES
-$year = mysql_escape_string($_REQUEST['year']);
-$bill = mysql_escape_string(strtolower($_REQUEST['bill']));
+$year = mysqli_escape_string($GLOBALS['db'], $_REQUEST['year']);
+$bill = mysqli_escape_string($GLOBALS['db'], strtolower($_REQUEST['bill']));
 
 $bill2 = new Bill2();
 $bill2->id = $bill2->getid($year, $bill);

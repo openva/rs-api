@@ -27,7 +27,7 @@ $database = new Database();
 $database->connect_old();
 
 # LOCALIZE VARIABLES
-$shortname = mysql_real_escape_string($_GET['shortname']);
+$shortname = mysqli_real_escape_string($GLOBALS['db'], $_GET['shortname']);
 
 # Create a new legislator object.
 $leg = new Legislator();
@@ -63,10 +63,10 @@ $sql = 'SELECT bills.id, bills.number, bills.catch_line,
         ORDER BY sessions.year DESC,
         SUBSTRING(bills.number FROM 1 FOR 2) ASC,
         CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) > 0) {
+$result = mysqli_query($GLOBALS['db'], $sql);
+if (mysqli_num_rows($result) > 0) {
     $legislator['bills'] = array();
-    while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    while ($bill = mysqli_fetch_array($result, MYSQL_ASSOC)) {
         $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/'
             . $bill['number'] . '/';
         $bill['number'] = strtoupper($bill['number']);
