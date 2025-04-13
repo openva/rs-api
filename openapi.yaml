@@ -71,6 +71,8 @@ paths:
                       type: string
                     legislator:
                       type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /section-video/{section}.json:
     get:
@@ -115,6 +117,8 @@ paths:
                     video_url:
                       type: string
                       format: uri
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /bills/{year}.json:
     get:
@@ -158,6 +162,8 @@ paths:
                           type: string
                         id:
                           type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /bill/{year}/{billId}.json:
     get:
@@ -216,6 +222,8 @@ paths:
                           type: string
                         time_end:
                           type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /legislators.json:
     get:
@@ -243,6 +251,8 @@ paths:
                       type: string
                     district:
                       type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
 
   /legislator/{shortname}.json:
     get:
@@ -278,6 +288,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/BillSummary'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
 components:
   schemas:
@@ -309,13 +321,20 @@ components:
             details:
               type: string
               example: "The requested resource could not be found"
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Not found"
   responses:
     NotFound:
-      description: The specified resource was not found
+      description: The requested resource was not found
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error404'
+            $ref: '#/components/schemas/Error'
+
   securitySchemes:
     bearerAuth:
       type: http
