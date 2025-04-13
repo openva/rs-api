@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:  # Enable manual triggering
   pull_request:
   schedule:
     - cron: 0 4 * * * # Redeploy at 4 AM every day
