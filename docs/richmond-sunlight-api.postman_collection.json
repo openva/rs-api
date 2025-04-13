@@ -1,0 +1,59 @@
+{
+    "info": {
+        "name": "Richmond Sunlight API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Get Bills by Year",
+            "request": {
+                "method": "GET",
+                "url": "https://api.richmondsunlight.com/1.1/bills/2024.json"
+            }
+        },
+        {
+            "name": "Get Bill Details",
+            "request": {
+                "method": "GET",
+                "url": "https://api.richmondsunlight.com/1.1/bill/2024/hb1234.json"
+            }
+        },
+        {
+            "name": "Get Legislators",
+            "request": {
+                "method": "GET",
+                "url": "https://api.richmondsunlight.com/1.1/legislators.json"
+            }
+        },
+        {
+            "name": "Get Legislator Details",
+            "request": {
+                "method": "GET",
+                "url": "https://api.richmondsunlight.com/1.1/legislator/rcdeeds.json"
+            }
+        },
+        {
+            "name": "Get Code Section",
+            "request": {
+                "method": "GET",
+                "url": "https://api.richmondsunlight.com/1.1/bysection/18.2-174.json"
+            }
+        },
+        {
+            "name": "Get Section Video",
+            "request": {
+                "method": "GET",
+                "url": "https://api.richmondsunlight.com/1.1/section-video/18.2-174.json"
+            }
+        },
+        {
+            "name": "Get Tag Suggestions",
+            "request": {
+                "method": "GET",
+                "url": {
+                    "raw": "https://api.richmondsunlight.com/1.1/tag-suggest?term=crime"
+                }
+            }
+        }
+    ]
+}

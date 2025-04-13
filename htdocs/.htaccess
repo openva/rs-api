@@ -21,3 +21,7 @@ ErrorDocument 404 /404.json
 <IfModule pagespeed_module>
   ModPagespeed off
 </IfModule>
+
+# Documentation
+RewriteRule ^docs/?$ docs/index.html [L]
+RewriteRule ^openapi\.yaml$ openapi.yaml [L]
