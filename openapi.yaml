@@ -1,0 +1,336 @@
+openapi: 3.0.3
+info:
+  title: Richmond Sunlight API
+  description: |
+    API for accessing legislative data including bills, legislators, and votes.
+    Supports both v1.0 and v1.1 endpoints.
+  version: 1.1
+
+servers:
+  - url: https://api.richmondsunlight.com/1.1
+    description: Production server (1.1)
+  - url: https://api.richmondsunlight.com/1.0
+    description: Production server (1.0)
+
+paths:
+  /tag-suggest:
+    get:
+      tags: [Tags]
+      summary: Get tag suggestions
+      description: Available in v1.1 only
+      parameters:
+        - name: term
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                example: ["crime", "firearm", "weapon"]
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /bysection/{section}.json:
+    get:
+      tags: [Code]
+      summary: Get code section
+      parameters:
+        - name: section
+          in: path
+          required: true
+          description: Virginia Code section number (URL encoded)
+          schema:
+            type: string
+            example: "18.2-174"
+      responses:
+        '200':
+          description: Bills found for section
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    year:
+                      type: string
+                    number:
+                      type: string
+                    catch_line:
+                      type: string
+                    summary:
+                      type: string
+                    outcome:
+                      type: string
+                    legislator:
+                      type: string
+
+  /section-video/{section}.json:
+    get:
+      tags: [Code]
+      summary: Get video clips by code section
+      description: |
+        Returns video clips from legislative sessions discussing a specific code section.
+        Available in v1.1 only.
+      parameters:
+        - name: section
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Video clips found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    bill_number:
+                      type: string
+                    year:
+                      type: string
+                    date:
+                      type: string
+                      format: date
+                    chamber:
+                      type: string
+                      enum: [house, senate]
+                    time_start:
+                      type: string
+                    time_end:
+                      type: string
+                    screenshot:
+                      type: string
+                      format: uri
+                    video_url:
+                      type: string
+                      format: uri
+
+  /bills/{year}.json:
+    get:
+      tags: [Bills]
+      summary: List bills for year
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[0-9]{4}$'
+      responses:
+        '200':
+          description: Bills found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    number:
+                      type: string
+                    chamber:
+                      type: string
+                      enum: [house, senate]
+                    date_introduced:
+                      type: string
+                      format: date
+                    status:
+                      type: string
+                    outcome:
+                      type: string
+                    title:
+                      type: string
+                    patron:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        id:
+                          type: string
+
+  /bill/{year}/{billId}.json:
+    get:
+      tags: [Bills]
+      summary: Get bill details
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[0-9]{4}$'
+        - name: billId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[A-Za-z0-9]+$'
+      responses:
+        '200':
+          description: Bill found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  number:
+                    type: string
+                  catch_line:
+                    type: string
+                  summary:
+                    type: string
+                  status:
+                    type: string
+                  outcome:
+                    type: string
+                  patron:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      id:
+                        type: string
+                  video:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                          format: uri
+                        screenshot:
+                          type: string
+                          format: uri
+                        time_start:
+                          type: string
+                        time_end:
+                          type: string
+
+  /legislators.json:
+    get:
+      tags: [Legislators]
+      summary: List all legislators
+      description: Available in v1.1 only
+      responses:
+        '200':
+          description: List of legislators found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    chamber:
+                      type: string
+                      enum: [house, senate]
+                    party:
+                      type: string
+                    district:
+                      type: string
+
+  /legislator/{shortname}.json:
+    get:
+      tags: [Legislators]
+      summary: Get legislator details
+      parameters:
+        - name: shortname
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z-]+$'
+      responses:
+        '200':
+          description: Legislator found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  chamber:
+                    type: string
+                    enum: [house, senate]
+                  party:
+                    type: string
+                  district:
+                    type: string
+                  bills:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BillSummary'
+
+components:
+  schemas:
+    BillSummary:
+      type: object
+      properties:
+        number:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+        outcome:
+          type: string
+        url:
+          type: string
+          format: uri
+    Error404:
+      type: object
+      properties:
+        error:
+          type: object
+          required:
+            - message
+          properties:
+            message:
+              type: string
+              example: "Not found"
+            details:
+              type: string
+              example: "The requested resource could not be found"
+  responses:
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error404'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Bills
+    description: Operations about bills
+  - name: Legislators
+    description: Operations about legislators
+  - name: Code
+    description: Operations about code sections
+  - name: Tags
+    description: Operations about tags
