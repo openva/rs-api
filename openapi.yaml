@@ -335,15 +335,6 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
 
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
-security:
-  - bearerAuth: []
-
 tags:
   - name: Bills
     description: Operations about bills
