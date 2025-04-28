@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: Firenza/secrets-to-env@v1.2.0
         with:
@@ -19,7 +19,7 @@ jobs:
       - name: Specify PHP version
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '5.6'
+          php-version: '8.2'
       - name: Make branch name available as Bash variable
         run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
       - run: >-
@@ -45,7 +45,7 @@ jobs:
           path: .
 
   deploy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: build # Don't deploy unless the build succeeds
     steps:
       - name: Get the secret-populated code
