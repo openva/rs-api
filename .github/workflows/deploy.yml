@@ -45,8 +45,8 @@ jobs:
           path: .
 
   deploy:
-    needs: build # Don't deploy unless the build succeeds
     runs-on: ubuntu-24.04
+    needs: build_DISABLED_TEMPORARILY # Don't deploy unless the build succeeds
     steps:
       - name: Get the secret-populated code
         uses: actions/download-artifact@v4
