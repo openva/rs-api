@@ -24,9 +24,23 @@ require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
+# DECLARATIVE FUNCTIONS
+# Run those functions that are necessary prior to loading this specific page.
+$database = new Database();
+$db = $database->connect_mysqli();
+
 # LOCALIZE VARIABLES
-$year = mysql_escape_string($_REQUEST['year']);
-$bill = mysql_escape_string(strtolower($_REQUEST['bill']));
+$year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^\d{4}$/']
+]);
+$bill = filter_input(INPUT_GET, 'bill', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^[hsrbj]{1,3}\d{1,4}$/']
+]);
+if ($year === false || $bill === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
 
 $bill2 = new Bill2();
 $bill2->id = $bill2->getid($year, $bill);

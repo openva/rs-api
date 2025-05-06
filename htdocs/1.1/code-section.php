@@ -24,10 +24,17 @@ header('Content-type: application/json');
 # Run those functions that are necessary prior to loading this specific
 # page.
 $database = new Database();
-$database->connect_old();
+$db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
-$section = mysql_escape_string(urldecode($_REQUEST['section']));
+$section = filter_input(INPUT_GET, 'section', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^[.0-9a-z-]{3,20}$/']
+]);
+if ($section === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
 
 # Select the bill data from the database.
 // Use proper bill number sorting
@@ -42,8 +49,8 @@ $sql = 'SELECT sessions.year, bills.number, bills.catch_line, bills.summary, bil
 			ON bills.chief_patron_id = representatives.id
 		WHERE bills_section_numbers.section_number =  "' . $section . '"
 		ORDER BY year ASC, bills.number ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
+$result = mysqli_query($db, $sql);
+if (mysqli_num_rows($result) == 0) {
     // What error SHOULD this return?
     header("Status: 404 Not Found");
     $message = array('error' =>
@@ -54,12 +61,12 @@ if (mysql_num_rows($result) == 0) {
 }
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-$bill = mysql_fetch_array($result, MYSQL_ASSOC);
+$bill = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 # Build up a listing of all bills.
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $bills[] = array_map('stripslashes', $bill);

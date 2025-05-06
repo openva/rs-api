@@ -25,10 +25,17 @@ header('Content-type: application/json');
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific page.
 $database = new Database();
-$database->connect_old();
+$db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
-$year = mysql_escape_string($_REQUEST['year']);
+$year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^\d{4}$/']
+]);
+if ($year === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
 
 # Select the bill data from the database.
 $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status, bills.outcome,
@@ -43,8 +50,8 @@ $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status,
 		ORDER BY bills.chamber DESC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
+$result = mysqli_query($db, $sql);
+if (mysqli_num_rows($result) == 0) {
     // send this as a JSON-formatted error!
     die('Richmond Sunlight has no record of bills for ' . $year . '.');
 }
@@ -53,7 +60,7 @@ $bills = array();
 
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bill = array_map('stripslashes', $bill);
 
     # Assign the patron data to a subelement.
@@ -62,7 +69,6 @@ while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
 
     # Eliminate the fields we no longer need.
     unset($bill['patron'], $bill['patron_id']);
-
 
     $bills[] = $bill;
 }

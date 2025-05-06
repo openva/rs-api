@@ -27,7 +27,7 @@ header('Content-type: application/json');
  * Run those functions that are necessary prior to loading this specific page.
  */
 $database = new Database();
-$database->connect_old();
+$db = $database->connect_mysqli();
 
 /*
  * LOCALIZE VARIABLES
@@ -55,11 +55,11 @@ if (isset($year)) {
 }
 $sql .= 'ORDER BY representatives.name ASC';
 
-$result = mysql_query($sql);
-if (mysql_num_rows($result) > 0) {
+$result = mysqli_query($db, $sql);
+if (mysqli_num_rows($result) > 0) {
     $legislators = array();
 
-    while ($legislator = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    while ($legislator = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         $legislator = array_map('stripslashes', $legislator);
 
         /*

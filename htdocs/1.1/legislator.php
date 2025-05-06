@@ -24,10 +24,17 @@ header('Content-type: application/json');
 # Run those functions that are necessary prior to loading this specific
 # page.
 $database = new Database();
-$database->connect_old();
+$db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
-$shortname = mysql_real_escape_string($_GET['shortname']);
+$shortname = filter_input(INPUT_GET, 'shortname', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^[a-z-]{3,30}$/']
+]);
+if ($shortname === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
 
 # Create a new legislator object.
 $leg = new Legislator();
@@ -63,10 +70,10 @@ $sql = 'SELECT bills.id, bills.number, bills.catch_line,
         ORDER BY sessions.year DESC,
         SUBSTRING(bills.number FROM 1 FOR 2) ASC,
         CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) > 0) {
+$result = mysqli_query($db, $sql);
+if (mysqli_num_rows($result) > 0) {
     $legislator['bills'] = array();
-    while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+    while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/'
             . $bill['number'] . '/';
         $bill['number'] = strtoupper($bill['number']);

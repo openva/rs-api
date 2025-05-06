@@ -24,10 +24,17 @@ header('Content-type: application/json');
 # Run those functions that are necessary prior to loading this specific
 # page.
 $database = new Database();
-$database->connect_old();
+$database->connect_mysqli();
 
 # LOCALIZE VARIABLES
-$section = mysql_escape_string(urldecode($_REQUEST['section']));
+$section = filter_input(INPUT_GET, 'section', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^[.0-9a-z-]{3,20}$/']
+]);
+if ($section === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
 
 # Select the bill data from the database.
 $sql = 'SELECT DISTINCT bills.number AS bill_number, sessions.year, files.date, files.chamber,
@@ -44,8 +51,8 @@ $sql = 'SELECT DISTINCT bills.number AS bill_number, sessions.year, files.date, 
 			ON bills.session_id = sessions.id
 		WHERE bills_section_numbers.section_number = "' . $section . '"
 		ORDER BY files.date ASC, video_clips.time_start ASC ';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
+$result = mysqli_query($db, $sql);
+if (mysqli_num_rows($result) == 0) {
     header("Status: 404 Not Found");
     $message = array('error' =>
         array('message' => 'No Video Found',
@@ -55,7 +62,7 @@ if (mysql_num_rows($result) == 0) {
 }
 
 # Build up a list of all video clips
-while ($clip = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($clip = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $clip['bill_url'] = 'https://www.richmondsunlight.com/bill/' . $clip['year'] . '/'
         . $clip['bill_number'] . '/';
     $clip['bill_number'] = strtoupper($clip['bill_number']);

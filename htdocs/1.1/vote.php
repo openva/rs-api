@@ -16,11 +16,25 @@ require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
+# DECLARATIVE FUNCTIONS
+# Run those functions that are necessary prior to loading this specific page.
+$database = new Database();
+$db = $database->connect_mysqli();
+
 /*
  * Localize variables
  */
-$year = mysql_escape_string($_REQUEST['year']);
-$lis_id = mysql_escape_string($_REQUEST['lis_id']);
+$year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^\d{4}$/']
+]);
+$lis_id = filter_input(INPUT_GET, 'lis_id', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^\d{1,6}$/']
+]);
+if ($year === false || $lis_id === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
 
 $vote_info = new Vote();
 $vote_info->lis_id = $lis_id;
