@@ -44,27 +44,27 @@ jobs:
           name: codebase
           path: .
 
-  deploy:
-    runs-on: ubuntu-24.04
-    needs: build_DISABLED_TEMPORARILY # Don't deploy unless the build succeeds
-    steps:
-      - name: Get the secret-populated code
-        uses: actions/download-artifact@v4
-        with:
-          name: codebase
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: us-east-1
-      - name: Deploy via CodeDeploy
-        run: |
-          aws deploy push --application-name RS-API \
-            --s3-location s3://deploy.richmondsunlight.com/rs-api-master.zip \
-            --ignore-hidden-files
-          aws deploy create-deployment \
-            --application-name RS-API \
-            --deployment-group-name RS-API-Fleet \
-            --deployment-config-name CodeDeployDefault.OneAtATime \
-            --s3-location bucket=deploy.richmondsunlight.com,key=rs-api-master.zip,bundleType=zip
+# deploy:
+  #   runs-on: ubuntu-24.04
+  #   needs: build # Don't deploy unless the build succeeds
+  #   steps:
+  #     - name: Get the secret-populated code
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: codebase
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v3
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+  #         aws-region: us-east-1
+  #     - name: Deploy via CodeDeploy
+  #       run: |
+  #         aws deploy push --application-name RS-API \
+  #           --s3-location s3://deploy.richmondsunlight.com/rs-api-master.zip \
+  #           --ignore-hidden-files
+  #         aws deploy create-deployment \
+  #           --application-name RS-API \
+  #           --deployment-group-name RS-API-Fleet \
+  #           --deployment-config-name CodeDeployDefault.OneAtATime \
+  #           --s3-location bucket=deploy.richmondsunlight.com,key=rs-api-master.zip,bundleType=zip
