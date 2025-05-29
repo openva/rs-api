@@ -30,8 +30,8 @@ jobs:
       - run: >-
           curl -L https://github.com/openva/richmondsunlight.com/archive/refs/heads/deploy.zip -o deploy.zip
           && unzip deploy.zip
-          mv richmondsunlight.com-deploy richmondsunlight.com &&
-          rm deploy.zip
+          && mv richmondsunlight.com-deploy richmondsunlight.com
+          && rm deploy.zip
       - run: cd richmondsunlight.com && composer install && cd ..
       - run: mkdir htdocs/includes/
       - run: cp richmondsunlight.com/htdocs/includes/*.php htdocs/includes/
