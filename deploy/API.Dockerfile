@@ -1,6 +1,6 @@
 FROM php:8-apache
 
-RUN docker-php-ext-install mysqli mysql pdo pdo_mysql && a2enmod rewrite && a2enmod expires && a2enmod headers
+RUN docker-php-ext-install mysqli pdo pdo_mysql && a2enmod rewrite && a2enmod expires && a2enmod headers
 
 RUN apt --fix-broken install
 RUN apt-get update
