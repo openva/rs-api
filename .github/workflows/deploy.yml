@@ -24,10 +24,14 @@ jobs:
         run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
       - run: >-
           sudo apt-get update && 
-          sudo apt-get install -y php5.6-cli php5.6-curl php5.6-memcached php5.6-mysql yarn zip
+          sudo apt-get install -y php5.6-cli php5.6-curl php5.6-memcached php5.6-mysql yarn zip curl
       - uses: actions/checkout@v3
       - run: sudo apt-get update -qq
-      - run: git clone -b deploy https://github.com/openva/richmondsunlight.com.git
+      - run: >-
+          curl -L https://github.com/openva/richmondsunlight.com/archive/refs/heads/deploy.zip -o deploy.zip
+          && unzip deploy.zip
+          mv richmondsunlight.com-deploy richmondsunlight.com &&
+          rm deploy.zip
       - run: cd richmondsunlight.com && composer install && cd ..
       - run: mkdir htdocs/includes/
       - run: cp richmondsunlight.com/htdocs/includes/*.php htdocs/includes/
