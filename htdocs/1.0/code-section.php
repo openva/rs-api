@@ -15,16 +15,24 @@
 # Include any files or libraries that are necessary for this specific page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
-require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific page.
-@connect_to_db();
+$database = new Database();
+$db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
-$section = mysql_escape_string(urldecode($_REQUEST['section']));
+$section = filter_input(INPUT_GET, 'section', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^[.0-9a-z-]{3,20}$/']
+]);
+if ($section === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
+$section_safe = mysqli_real_escape_string($db, $section);
 
 # Select the bill data from the database.
 // Use proper bill number sorting
@@ -37,26 +45,23 @@ $sql = 'SELECT sessions.year, bills.number, bills.catch_line, bills.summary, bil
 			ON bills.session_id = sessions.id
 		LEFT JOIN representatives
 			ON bills.chief_patron_id = representatives.id
-		WHERE bills_section_numbers.section_number =  "' . $section . '"
+		WHERE bills_section_numbers.section_number =  "' . $section_safe . '"
 		ORDER BY year ASC, bills.number ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
-    header('HTTP/1.0 404 Not Found');
-    header('Content-type: application/json');
+$result = mysqli_query($db, $sql);
+if ($result === false || mysqli_num_rows($result) === 0) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     $message = array('error' =>
         array('message' => 'No Bills Found',
             'details' => 'No bills were found that cite section ' . $section . '.'));
     echo json_encode($message);
     exit;
 }
-# The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
-# and indexed arrays.
-$bill = mysql_fetch_array($result, MYSQL_ASSOC);
 
 # Build up a list of all bills.
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$bills = array();
+while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bill['url'] = 'http://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $bills[] = array_map('stripslashes', $bill);

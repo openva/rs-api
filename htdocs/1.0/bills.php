@@ -18,17 +18,25 @@
 # Include any files or libraries that are necessary for this specific page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
-require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
 
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific page.
-@connect_to_db();
+$database = new Database();
+$db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
-$year = mysql_escape_string($_REQUEST['year']);
+$year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^\d{4}$/']
+]);
+if ($year === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
+$year_safe = (int) $year;
 
 # Select the bill data from the database.
 $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status, bills.outcome,
@@ -39,13 +47,13 @@ $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status,
 			ON bills.chief_patron_id=representatives.id
 		LEFT JOIN sessions
 			ON bills.session_id=sessions.id
-		WHERE sessions.year=' . $year . '
+		WHERE sessions.year=' . $year_safe . '
 		ORDER BY bills.chamber DESC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
-    json_error('Richmond Sunlight has no record of bills for ' . $year . '.');
+$result = mysqli_query($db, $sql);
+if (mysqli_num_rows($result) === 0) {
+    json_error('Richmond Sunlight has no record of bills for ' . $year_safe . '.');
     exit();
 }
 
@@ -53,7 +61,7 @@ $bills = array();
 
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bill = array_map('stripslashes', $bill);
 
     # Assign the patron data to a subelement.

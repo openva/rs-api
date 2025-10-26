@@ -13,7 +13,6 @@
 # page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
-require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
@@ -32,6 +31,7 @@ if ($hash === false) {
     readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
 }
+$hash_safe = mysqli_real_escape_string($db, $hash);
 
 # Get this portfolio's basic data.
 $sql = 'SELECT dashboard_portfolios.id, dashboard_portfolios.hash, dashboard_portfolios.name,
@@ -42,11 +42,11 @@ $sql = 'SELECT dashboard_portfolios.id, dashboard_portfolios.hash, dashboard_por
 			ON dashboard_portfolios.user_id = users.id
 		LEFT JOIN dashboard_user_data
 			ON users.id = dashboard_user_data.user_id
-		WHERE dashboard_portfolios.public = "y" AND dashboard_portfolios.hash="' . $hash . '"';
-$result = mysqli_query($sql);
+		WHERE dashboard_portfolios.public = "y" AND dashboard_portfolios.hash="' . $hash_safe . '"';
+$result = mysqli_query($db, $sql);
 
 # If this portfolio doesn't exist or isn't visible.
-if (mysqli_num_rows($result) == 0) {
+if ($result === false || mysqli_num_rows($result) == 0) {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     $message = array('error' =>
         array('message' => 'No Portfolio Found',
@@ -95,14 +95,14 @@ $sql = 'SELECT bills.number, bills.catch_line, sessions.year, dashboard_bills.no
 			ON dashboard_bills.bill_id=bills.id
 		LEFT JOIN sessions
 			ON bills.session_id=sessions.id
-		WHERE dashboard_portfolios.hash="' . $hash . '"
+		WHERE dashboard_portfolios.hash="' . $hash_safe . '"
 		AND bills.session_id=' . SESSION_ID . '
 		ORDER BY bills.chamber DESC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
 $result = mysqli_query($db, $sql);
-if (mysqli_num_rows($result) == 0) {
-    header("Status: 404 Not Found");
+if ($result === false || mysqli_num_rows($result) == 0) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     $message = array('error' =>
         array('message' => 'No Bills Found',
             'details' => 'No bills were found in portfolio ' . $hash . '.'));
@@ -112,7 +112,7 @@ if (mysqli_num_rows($result) == 0) {
 
 # Build up a list of all bills.
 $portfolio['bills'] = array();
-while ($bill = mysql_fetch_assoc($result)) {
+while ($bill = mysqli_fetch_assoc($result)) {
     $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $portfolio['bills'][] = array_map('stripslashes', $bill);
