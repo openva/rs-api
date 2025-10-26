@@ -21,18 +21,29 @@
 # Include any files or libraries that are necessary for this specific page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
-require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
-
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific page.
-connect_to_db();
+$database = new Database();
+$db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
-$year = mysql_escape_string($_REQUEST['year']);
-$bill = mysql_escape_string($_REQUEST['bill']);
+$year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^\d{4}$/']
+]);
+$bill = filter_input(INPUT_GET, 'bill', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^[hsrbj]{1,3}\d{1,4}$/']
+]);
+if ($year === false || $bill === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
+
+$bill_safe = mysqli_real_escape_string($db, $bill);
+$year_safe = (int) $year;
 
 # Select the bill data from the database.
 $sql = 'SELECT bills.id, bills.number, bills.current_chamber, bills.status, bills.date_introduced,
@@ -45,15 +56,15 @@ $sql = 'SELECT bills.id, bills.number, bills.current_chamber, bills.status, bill
 			ON representatives.district_id=districts.id
 		LEFT JOIN sessions
 			ON bills.session_id=sessions.id
-		WHERE bills.number = "' . $bill . '" AND sessions.year=' . $year;
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
-    json_error('Richmond Sunlight has no record of bill ' . strtoupper($bill) . ' in ' . $year . '.');
+		WHERE bills.number = "' . $bill_safe . '" AND sessions.year=' . $year_safe;
+$result = mysqli_query($db, $sql);
+if ($result === false || mysqli_num_rows($result) === 0) {
+    json_error('Richmond Sunlight has no record of bill ' . strtoupper($bill) . ' in ' . $year_safe . '.');
     exit();
 }
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-$bill = mysql_fetch_array($result, MYSQL_ASSOC);
+$bill = mysqli_fetch_array($result, MYSQLI_ASSOC);
 $bill = array_map('stripslashes', $bill);
 
 # Select tags from the database.
@@ -61,9 +72,9 @@ $sql = 'SELECT tag
 		FROM tags
 		WHERE bill_id=' . $bill['id'] . '
 		ORDER BY tag ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) > 0) {
-    while ($tag = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = mysqli_query($db, $sql);
+if ($result !== false && mysqli_num_rows($result) > 0) {
+    while ($tag = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         $bill['tags'][] = $tag;
     }
 }

@@ -17,17 +17,25 @@
 # page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
-require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific
 # page.
-@connect_to_db();
+$database = new Database();
+$db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
-$hash = mysql_escape_string(urldecode($_REQUEST['hash']));
+$hash = filter_input(INPUT_GET, 'hash', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^[a-z]{4,16}$/']
+]);
+if ($hash === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
+$hash_safe = mysqli_real_escape_string($db, $hash);
 
 # Select the bill data from the database.
 $sql = 'SELECT bills.number, sessions.year, dashboard_bills.notes
@@ -40,15 +48,14 @@ $sql = 'SELECT bills.number, sessions.year, dashboard_bills.notes
 			ON dashboard_bills.bill_id=bills.id
 		LEFT JOIN sessions
 			ON bills.session_id=sessions.id
-		WHERE dashboard_portfolios.hash="' . $hash . '"
+		WHERE dashboard_portfolios.hash="' . $hash_safe . '"
 		AND bills.session_id=' . SESSION_ID . '
 		ORDER BY bills.chamber DESC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
-    header('HTTP/1.0 404 Not Found');
-    header('Content-type: application/json');
+$result = mysqli_query($db, $sql);
+if ($result === false || mysqli_num_rows($result) === 0) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     $message = array('error' =>
         array('message' => 'No Bills Found',
             'details' => 'No bills were found in portfolio ' . $hash . '.'));
@@ -59,7 +66,8 @@ if (mysql_num_rows($result) == 0) {
 # Build up a listing of all bills.
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
-while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$bills = array();
+while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bill['url'] = 'http://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $bills[] = array_map('stripslashes', $bill);

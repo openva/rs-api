@@ -16,12 +16,14 @@ if [ "$SITE_SET_UP" -eq "0" ]; then
         echo "/var/swap.1   swap    swap    defaults        0   0" | sudo tee /etc/fstab
     fi
 
-    # Remove all PHP packages (they may well be PHP 7)
-    dpkg -s php5.7
-    if [ $? -eq 1 ]; then
-        sudo apt-get -y purge $(dpkg -l | grep php| awk '{print $2}' |tr "\n" " ")
+    # Ensure the modern PHP repository is available and remove any old PHP packages.
+    if ! dpkg -s php8.3-cli >/dev/null 2>&1; then
+        INSTALLED_PHP_PACKAGES="$(dpkg -l | awk '/^ii\s+php/{print $2}')"
+        if [ -n "$INSTALLED_PHP_PACKAGES" ]; then
+            sudo apt-get -y purge $INSTALLED_PHP_PACKAGES
+        fi
 
-        # Add the PHP 5 repo
+        # Add the maintained PHP repository (provides PHP 8.x builds).
         sudo add-apt-repository -y ppa:ondrej/php
     fi
 
@@ -34,7 +36,31 @@ if [ "$SITE_SET_UP" -eq "0" ]; then
     # Install all packages.
     sudo apt-get update
     sudo DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
-    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y apache2 curl git gzip unzip openssl php5.6 php5.6-mysql mysql-client php5.6-curl php5.6-mbstring php5.6-apc php5.6-mbstring php5.6-xml python python-pip s3cmd wget awscli certbot python-certbot-apache
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        apache2 \
+        curl \
+        git \
+        gzip \
+        unzip \
+        openssl \
+        libapache2-mod-php8.3 \
+        php8.3 \
+        php8.3-cli \
+        php8.3-curl \
+        php8.3-mbstring \
+        php8.3-mysql \
+        php8.3-xml \
+        php8.3-zip \
+        php8.3-intl \
+        php8.3-apcu \
+        mysql-client \
+        python3 \
+        python3-pip \
+        s3cmd \
+        wget \
+        awscli \
+        certbot \
+        python3-certbot-apache
 
     # Install mod_pagespeed
     dpkg -s mod-pagespeed-beta

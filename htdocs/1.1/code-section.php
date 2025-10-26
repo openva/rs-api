@@ -16,7 +16,6 @@
 # page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
-require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
@@ -35,6 +34,7 @@ if ($section === false) {
     readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
 }
+$section_safe = mysqli_real_escape_string($db, $section);
 
 # Select the bill data from the database.
 // Use proper bill number sorting
@@ -47,25 +47,23 @@ $sql = 'SELECT sessions.year, bills.number, bills.catch_line, bills.summary, bil
 			ON bills.session_id = sessions.id
 		LEFT JOIN representatives
 			ON bills.chief_patron_id = representatives.id
-		WHERE bills_section_numbers.section_number =  "' . $section . '"
+		WHERE bills_section_numbers.section_number =  "' . $section_safe . '"
 		ORDER BY year ASC, bills.number ASC';
 $result = mysqli_query($db, $sql);
-if (mysqli_num_rows($result) == 0) {
+if ($result === false || mysqli_num_rows($result) == 0) {
     // What error SHOULD this return?
-    header("Status: 404 Not Found");
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     $message = array('error' =>
         array('message' => 'No Bills Found',
             'details' => 'No bills were found that cite section ' . $section . '.'));
     echo json_encode($message);
     exit;
 }
-# The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
-# and indexed arrays.
-$bill = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
 # Build up a listing of all bills.
 # The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
 # and indexed arrays.
+$bills = array();
 while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);

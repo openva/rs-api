@@ -16,17 +16,25 @@
 # Include any files or libraries that are necessary for this specific page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
-require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
 # DECLARATIVE FUNCTIONS
 # Run those functions that are necessary prior to loading this specific
 # page.
-@connect_to_db();
+$database = new Database();
+$db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
-$shortname = @mysql_real_escape_string($_GET['shortname']);
+$shortname = filter_input(INPUT_GET, 'shortname', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^[a-z-]{3,30}$/']
+]);
+if ($shortname === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
+}
+$shortname_safe = mysqli_real_escape_string($db, $shortname);
 
 # Select general legislator data from the database.
 $sql = 'SELECT representatives.id, representatives.shortname, representatives.name,
@@ -42,14 +50,14 @@ $sql = 'SELECT representatives.id, representatives.shortname, representatives.na
 		FROM representatives
 		LEFT JOIN districts
 			ON representatives.district_id=districts.id
-		WHERE shortname = "' . $shortname . '"';
-$result = @mysql_query($sql);
-if (mysql_num_rows($result) == 0) {
+		WHERE shortname = "' . $shortname_safe . '"';
+$result = mysqli_query($db, $sql);
+if ($result === false || mysqli_num_rows($result) === 0) {
     json_error('Richmond Sunlight has no record of legislator ' . $shortname . '.');
     exit();
 }
 
-$legislator = @mysql_fetch_array($result, MYSQL_ASSOC);
+$legislator = mysqli_fetch_array($result, MYSQLI_ASSOC);
 $legislator = array_map('stripslashes', $legislator);
 
 # Eliminate any useless data.
@@ -82,9 +90,10 @@ $sql = 'SELECT committees.name, committee_members.position
 			ON committees.id = committee_members.committee_id
 		WHERE committee_members.representative_id = ' . $legislator['id'] . '
 		AND (date_ended = "0000-00-00" OR date_ended IS NULL)';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) > 0) {
-    while ($committee = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = mysqli_query($db, $sql);
+if ($result !== false && mysqli_num_rows($result) > 0) {
+    $legislator['committees'] = array();
+    while ($committee = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         $committee = array_map('stripslashes', $committee);
         if (empty($committee['position'])) {
             $committee['position'] = 'member';
@@ -103,9 +112,10 @@ $sql = 'SELECT bills.number, sessions.year, bills.catch_line AS title, bills.dat
 		ORDER BY sessions.year ASC,
 		SUBSTRING(bills.number FROM 1 FOR 2) ASC,
 		CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysql_query($sql);
-if (mysql_num_rows($result) > 0) {
-    while ($bill = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result = mysqli_query($db, $sql);
+if ($result !== false && mysqli_num_rows($result) > 0) {
+    $legislator['bills'] = array();
+    while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         $bill['url'] = 'http://www.richmondsunlight.com/bill/' . $bill['year']
             . '/' . $bill['number'] . '/';
         $bill['number'] = strtoupper($bill['number']);

@@ -16,7 +16,6 @@
 # page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
-require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
@@ -24,7 +23,7 @@ header('Content-type: application/json');
 # Run those functions that are necessary prior to loading this specific
 # page.
 $database = new Database();
-$database->connect_mysqli();
+$db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
 $section = filter_input(INPUT_GET, 'section', FILTER_VALIDATE_REGEXP, [
@@ -35,6 +34,7 @@ if ($section === false) {
     readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
 }
+$section_safe = mysqli_real_escape_string($db, $section);
 
 # Select the bill data from the database.
 $sql = 'SELECT DISTINCT bills.number AS bill_number, sessions.year, files.date, files.chamber,
@@ -49,11 +49,11 @@ $sql = 'SELECT DISTINCT bills.number AS bill_number, sessions.year, files.date, 
 			ON bills_section_numbers . bill_id = bills.id
 		LEFT JOIN sessions
 			ON bills.session_id = sessions.id
-		WHERE bills_section_numbers.section_number = "' . $section . '"
+		WHERE bills_section_numbers.section_number = "' . $section_safe . '"
 		ORDER BY files.date ASC, video_clips.time_start ASC ';
 $result = mysqli_query($db, $sql);
-if (mysqli_num_rows($result) == 0) {
-    header("Status: 404 Not Found");
+if ($result === false || mysqli_num_rows($result) == 0) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     $message = array('error' =>
         array('message' => 'No Video Found',
             'details' => 'No video was found that’s based on bills that cite section ' . $section . '.'));
@@ -62,6 +62,7 @@ if (mysqli_num_rows($result) == 0) {
 }
 
 # Build up a list of all video clips
+$clips = array();
 while ($clip = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $clip['bill_url'] = 'https://www.richmondsunlight.com/bill/' . $clip['year'] . '/'
         . $clip['bill_number'] . '/';
@@ -78,7 +79,7 @@ while ($clip = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 # clips of each legislator speaking about the bill. We only want that entire discussion here.
 foreach ($clips as $key => &$clip) {
     foreach ($clips as $candidate) {
-        if ($candidate->video_url == $clip->video_url) {
+        if ($candidate['video_url'] == $clip['video_url']) {
             # If there is another clip that starts earlier than or when this one does, and ends
             # later than or when this one does, than delete this one.
             if (
