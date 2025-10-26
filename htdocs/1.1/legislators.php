@@ -18,7 +18,6 @@
  */
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
-require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
@@ -32,8 +31,13 @@ $db = $database->connect_mysqli();
 /*
  * LOCALIZE VARIABLES
  */
-if (isset($_GET['year']) && strlen($_GET['year']) == 4 && is_numeric($_GET['year'])) {
-    $year = $_GET['year'];
+$year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
+    'options' => ['regexp' => '/^\d{4}$/']
+]);
+if ($year === false) {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
+    exit();
 }
 
 /*
@@ -46,17 +50,17 @@ $sql = 'SELECT representatives.id, representatives.shortname, representatives.na
 		FROM representatives
 		LEFT JOIN districts
 			ON representatives.district_id=districts.id ';
-if (isset($year)) {
-    $sql .= 'WHERE representatives.date_started <= ' . $year . '-01-01
-		AND
-			(representatives.date_ended >= ' . $year . '-01-01
-			OR
-			representatives.date_ended IS NULL';
+if ($year !== null) {
+    $sql .= 'WHERE representatives.date_started <= "' . $year . '-01-01"
+		AND (
+			representatives.date_ended >= "' . $year . '-01-01"
+			OR representatives.date_ended IS NULL
+		) ';
 }
 $sql .= 'ORDER BY representatives.name ASC';
 
 $result = mysqli_query($db, $sql);
-if (mysqli_num_rows($result) > 0) {
+if ($result !== false && mysqli_num_rows($result) > 0) {
     $legislators = array();
 
     while ($legislator = mysqli_fetch_array($result, MYSQLI_ASSOC)) {

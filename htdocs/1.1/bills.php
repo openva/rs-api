@@ -18,7 +18,6 @@
 # Include any files or libraries that are necessary for this specific page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
-require_once 'functions.inc.php';
 
 header('Content-type: application/json');
 
