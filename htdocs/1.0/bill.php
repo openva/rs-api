@@ -87,8 +87,10 @@ $bill['summary'] = str_replace("\n", ' ', $bill['summary']);
 $bill['text'] = str_replace("\r", '', $bill['text']);
 
 # Assign the patron data to a subelement.
-$bill['patron']['name'] = $bill['name'];
-$bill['patron']['id'] = $bill['shortname'];
+$bill['patron'] = array(
+    'name' => $bill['name'],
+    'id' => $bill['shortname'],
+);
 
 # Eliminate the fields we no longer need.
 unset($bill['name'], $bill['shortname'], $bill['party'], $bill['id']);

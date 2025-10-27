@@ -63,8 +63,10 @@ while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bill = array_map('stripslashes', $bill);
 
     # Assign the patron data to a subelement.
-    $bill['patron']['name'] = $bill['patron'];
-    $bill['patron']['id'] = $bill['patron_id'];
+    $bill['patron'] = array(
+        'name' => $bill['patron'],
+        'id' => $bill['patron_id'],
+    );
 
     # Eliminate the fields we no longer need.
     unset($bill['patron'], $bill['patron_id']);
