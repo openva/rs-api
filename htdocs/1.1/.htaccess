@@ -2,7 +2,7 @@ RewriteEngine On
 
 
 RewriteCond %{QUERY_STRING} ^term=(.+)$
-RewriteRule ^tag-suggest/?$ tag-suggest.php?term=$1? [QSA]
+RewriteRule ^tag-suggest/?$ tag-suggest.php?term=$1 [QSA]
 
 RewriteRule ^bysection/(.*).json$ code-section.php?section=$1 [QSA]
 RewriteRule ^section-video/(.*).json$ code-section-video.php?section=$1 [QSA]
