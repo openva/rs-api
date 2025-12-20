@@ -74,10 +74,16 @@ jobs:
           --query "deployments[0]" \
           --output text)
 
-        if [ "$active_deployment_id" != "None" ]; then
-          aws deploy stop-deployment \
+        if [ -n "$active_deployment_id" ] && [ "$active_deployment_id" != "None" ]; then
+          if aws deploy stop-deployment \
             --deployment-id "$active_deployment_id" \
-            --auto-rollback-enabled
+            --auto-rollback-enabled; then
+            echo "Stopped active deployment: $active_deployment_id"
+          else
+            echo "Stop-deployment failed (likely already finished); continuing"
+          fi
+        else
+          echo "No active deployment to stop"
         fi
     - name: Deploy via CodeDeploy
       run: |
