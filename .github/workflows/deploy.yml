@@ -64,6 +64,21 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
         aws-region: us-east-1
+    - name: Cancel any active CodeDeploy deployment
+      run: |
+        set -euo pipefail
+        active_deployment_id=$(aws deploy list-deployments \
+          --application-name RS-API \
+          --deployment-group-name RS-API-Fleet \
+          --include-only-statuses Created Queued InProgress Ready \
+          --query "deployments[0]" \
+          --output text)
+
+        if [ "$active_deployment_id" != "None" ]; then
+          aws deploy stop-deployment \
+            --deployment-id "$active_deployment_id" \
+            --auto-rollback-enabled
+        fi
     - name: Deploy via CodeDeploy
       run: |
         aws deploy push --application-name RS-API \
