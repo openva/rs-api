@@ -284,6 +284,8 @@ paths:
                     type: string
                   district:
                     type: string
+                  sbe_id:
+                    type: string
                   bills:
                     type: array
                     items:
