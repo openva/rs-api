@@ -4,7 +4,10 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql && a2enmod rewrite && a2enmod ex
 
 RUN apt --fix-broken install
 RUN apt-get update
-RUN apt-get install -y git zip zlib1g-dev
+RUN apt-get install -y git zip zlib1g-dev libmemcached-dev libssl-dev
+
+# Install PHP memcached extension
+RUN pecl install memcached && docker-php-ext-enable memcached
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
