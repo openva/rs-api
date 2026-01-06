@@ -66,7 +66,7 @@ if ($result === false || mysqli_num_rows($result) == 0) {
 $bills = array();
 while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
-    $bill['number'] = strtoupper($bill['number']);
+    $bill['number'] = strtolower($bill['number']);
     $bills[] = array_map('stripslashes', $bill);
 }
 
