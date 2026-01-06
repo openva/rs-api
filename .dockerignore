@@ -1,0 +1,31 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies (will be installed in container)
+vendor/
+
+# Documentation
+*.md
+docs/
+
+# Testing artifacts
+phpstan/
+.phpstan.neon
+
+# Deployment (except what's needed for Docker)
+appspec.yml
+.github/
+
+# Generated files
+deploy/database.sql
