@@ -24,7 +24,7 @@ $db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
 $hash = filter_input(INPUT_GET, 'hash', FILTER_VALIDATE_REGEXP, [
-    'options' => ['regexp' => '/^[a-z]{4,16}$/']
+    'options' => ['regexp' => '/^[a-z0-9]{4,16}$/']
 ]);
 if ($hash === false) {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
