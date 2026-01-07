@@ -17,8 +17,6 @@ Options -Indexes
 Header add Content-type "application/json"
 Header add Access-Control-Allow-Origin "*"
 
-ErrorDocument 404 /404.json
-
 <IfModule pagespeed_module>
   ModPagespeed off
 </IfModule>
