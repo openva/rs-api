@@ -52,10 +52,6 @@ $video = new Video();
 $video->bill_id = $bill['id'];
 $bill['video'] = $video->by_bill();
 
-if ($bill['session_id'] != SESSION_ID) {
-    header('Cache-Control: max-age=' . (60 * 60 * 24 * 30.5) . ', public');
-} else {
-    header('Cache-Control: max-age=0, public');
-}
+api_cache_control_for_session((int) $bill['session_id']);
 
 api_json_success($bill);

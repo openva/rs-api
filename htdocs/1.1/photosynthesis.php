@@ -108,4 +108,5 @@ while ($bill = mysqli_fetch_assoc($result)) {
 }
 
 // Send the JSON.
+api_cache_control_for_session(SESSION_ID);
 api_json_success($portfolio);

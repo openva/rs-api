@@ -58,6 +58,7 @@ if ($result !== false && mysqli_num_rows($result) > 0) {
 
 else {
     $legislators = 'Richmond Sunlight has no record of any legislators. Yes, we are also troubled by this.';
+    api_cache_control_for_session(null);
     api_json_success($legislators);
 }
 

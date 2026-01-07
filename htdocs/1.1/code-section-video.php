@@ -82,4 +82,5 @@ $clips = array_values($clips);
 $clips = (object) $clips;
 
 # Send the JSON.
+api_cache_control_for_session(null);
 api_json_success($clips);
