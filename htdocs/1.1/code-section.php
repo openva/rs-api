@@ -35,12 +35,6 @@ $sql = 'SELECT sessions.year, bills.number, bills.catch_line, bills.summary, bil
 $result = mysqli_query($db, $sql);
 if ($result === false || mysqli_num_rows($result) == 0) {
     // What error SHOULD this return?
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    $message = array('error' =>
-        array('message' => 'No Bills Found',
-            'details' => 'No bills were found that cite section ' . $section . '.'));
-    echo json_encode($message);
-    exit;
 }
 
 $bills = array();

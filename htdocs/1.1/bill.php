@@ -31,9 +31,7 @@ if ($year === false || $bill === false) {
 $bill2 = new Bill2();
 $bill2->id = $bill2->getid($year, $bill);
 if ($bill2->id === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
+    api_json_error(404, 'Bill not found', 'No bill found for ' . $bill . ' in ' . $year . '.');
 }
 
 // Get basic data about this bill.

@@ -16,10 +16,6 @@ $db = $database->connect_mysqli();
 $year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^\d{4}$/']
 ]);
-if ($year === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
 // Connect
 // Localize variables
 }

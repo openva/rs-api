@@ -23,18 +23,14 @@ $db = $database->connect_mysqli();
 $fragment = filter_input(INPUT_GET, 'term', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^[a-z]{3,15}$/']
 ]);
-if ($fragment === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
+if ($fragment === false || $fragment === null) {
+    api_json_error(400, 'Invalid term', 'Parameter term must be 3-15 lowercase letters.');
 }
 
-$tags = new Tags();
-$tags->fragment = $fragment;
-$suggestions = $tags->get_suggestions();
-if ($suggestions === false) {
-    header('HTTP/1.1 404 Not Found');
-    exit();
+}
+
+if (empty($suggestions)) {
+    api_json_error(404, 'No tags found', 'No tags match fragment ' . $fragment . '.');
 }
 
 # Send the JSON.

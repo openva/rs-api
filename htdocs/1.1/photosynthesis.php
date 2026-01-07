@@ -13,10 +13,8 @@ $db = $database->connect_mysqli();
 $hash = filter_input(INPUT_GET, 'hash', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^[a-z0-9]{4,16}$/']
 ]);
-if ($hash === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
+if ($hash === false || $hash === null) {
+    api_json_error(400, 'Invalid portfolio hash', 'Hash must be 4-16 lowercase alphanumerics.');
 }
 $hash_safe = mysqli_real_escape_string($db, $hash);
 
@@ -40,6 +38,9 @@ if ($result === false || mysqli_num_rows($result) == 0) {
             'details' => 'Portfolio ' . $hash . ' does not exist.'));
     echo json_encode($message);
     exit;
+// If this portfolio doesn't exist or isn't visible.
+if ($result === false || $result->num_rows == 0) {
+    api_json_error(404, 'No Portfolio Found', 'Portfolio ' . $hash . ' does not exist.');
 }
 
 

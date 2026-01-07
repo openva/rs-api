@@ -24,20 +24,19 @@ $year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
 $lis_id = filter_input(INPUT_GET, 'lis_id', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^\d{1,6}$/']
 ]);
-if ($year === false || $lis_id === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
+if ($year === false || $lis_id === false || $year === null || $lis_id === null) {
+    api_json_error(400, 'Invalid vote', 'Parameters year and lis_id must be provided.');
+}
+
+if ($session_result === false || $session_result->num_rows === 0) {
+    api_json_error(404, 'Vote not found', 'No vote found for LIS ID ' . $lis_id . ' in ' . $year . '.');
+}
 }
 
 $vote_info = new Vote();
 $vote_info->lis_id = $lis_id;
 $vote_info->session_year = $year;
 $vote = $vote_info->get_aggregate();
-if ($vote === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
 }
 
 $vote['legislators'] = $vote_info->get_detailed();

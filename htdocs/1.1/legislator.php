@@ -17,11 +17,9 @@ $db = $database->connect_mysqli();
 $shortname = filter_input(INPUT_GET, 'shortname', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^[a-z-]{3,30}$/']
 ]);
-if ($shortname === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
 // LOCALIZE VARIABLES
+if ($shortname === false || $shortname === null) {
+    api_json_error(404, 'Invalid legislator ID', 'Shortname must be 3-30 lowercase letters or dashes.');
 }
 
 // Create a new legislator object.
@@ -30,9 +28,7 @@ $leg = new Legislator();
 // Get the ID for this shortname.
 $leg_id = $leg->getid($shortname);
 if ($leg_id === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
+    api_json_error(404, 'Legislator not found', 'No legislator found with ID ' . $shortname . '.');
 }
 
 // Return the legislator's data as an array.

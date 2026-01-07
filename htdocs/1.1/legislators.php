@@ -13,9 +13,7 @@ $year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^\d{4}$/']
 ]);
 if ($year === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
+    api_json_error(400, 'Invalid year', 'Parameter year must be a 4-digit year if provided.');
 }
 
 $sql = 'SELECT representatives.id, representatives.shortname, representatives.name,
@@ -63,3 +61,4 @@ else {
 }
 
 echo json_encode($legislators);
+api_json_error(404, 'No Legislators Found', 'Richmond Sunlight has no record of any legislators.');
