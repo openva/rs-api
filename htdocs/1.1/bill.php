@@ -24,10 +24,8 @@ $year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
 $bill = filter_input(INPUT_GET, 'bill', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^[hsrbj]{1,3}\d{1,4}$/']
 ]);
-if ($year === false || $bill === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
+if ($year === false || $bill === false || $year === null || $bill === null) {
+    api_json_error(400, 'Invalid bill', 'Parameters year and bill must be provided.');
 }
 
 $bill2 = new Bill2();
