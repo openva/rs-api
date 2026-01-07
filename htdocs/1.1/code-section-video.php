@@ -1,15 +1,5 @@
 <?php
 
-###
-# Code Section Video JSON
-#
-# PURPOSE
-# Accepts a section of code, and responds with a listing of video clips that addressed that section.
-#
-# NOTES
-# This is not intended to be viewed. It just spits out a JSON file and that's that.
-#
-###
 
 # INCLUDES
 # Include any files or libraries that are necessary for this specific

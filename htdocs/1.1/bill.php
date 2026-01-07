@@ -1,20 +1,5 @@
 <?php
 
-###
-# Create Bill JSON
-#
-# PURPOSE
-# Accepts a year and a bill number and spits out a JSON file providing the basic specs on that
-# bill.
-#
-# NOTES
-# This is not intended to be viewed. It just spits out an JSON file and that's that.
-#
-# TODO
-# * Add a list of identical bills.
-# * Add the full status history, with each date and status update as individual items.
-#
-###
 
 # INCLUDES
 # Include any files or libraries that are necessary for this specific page to function.

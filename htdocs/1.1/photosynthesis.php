@@ -1,16 +1,5 @@
 <?php
 
-###
-# Create Photosynthesis JSON
-#
-# PURPOSE
-# Accepts a Photosynthesis portfolio hash, and responds with a listing of bills contained within
-# that portfolio, along with any associated comments.
-###
-
-# INCLUDES
-# Include any files or libraries that are necessary for this specific
-# page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
