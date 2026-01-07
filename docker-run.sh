@@ -43,7 +43,11 @@ MEMCACHED_EXISTS=$(docker ps -a --format '{{.Names}}' | grep -c '^rs_memcached$'
 
 if [ "$DB_EXISTS" -gt 0 ] && [ "$API_EXISTS" -gt 0 ] && [ "$MEMCACHED_EXISTS" -gt 0 ]; then
     echo "Containers already exist (possibly from richmondsunlight.com), starting them..."
-    docker start rs_db rs_memcached rs_api 2>/dev/null || true
+    docker start rs_db rs_memcached 2>/dev/null || true
+    # Always recreate the API container to ensure correct bind mount for this repo
+    echo "Recreating API container with this repo's htdocs..."
+    docker rm -f rs_api 2>/dev/null || true
+    docker compose up -d --build api
 else
     echo "Building and starting Docker containers..."
     docker compose up -d --build
