@@ -12,3 +12,14 @@ function api_db(): mysqli
     return $database->connect_mysqli();
 }
 
+/**
+ * Emit a JSON success response and exit.
+ */
+function api_json_success(mixed $payload, int $status = 200): void
+{
+    http_response_code($status);
+    header('Content-type: application/json');
+
+    api_json_output($payload);
+}
+

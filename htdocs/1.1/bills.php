@@ -54,5 +54,5 @@ while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bills[] = $bill;
 }
 
-echo json_encode($bills);
 // Send the JSON.
+api_json_success($bills);

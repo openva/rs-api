@@ -45,4 +45,4 @@ $vote['legislators'] = $vote_info->get_detailed();
 
 
 # Send the JSON.
-echo json_encode($vote);
+api_json_success($vote);

@@ -58,4 +58,4 @@ if ($bill['session_id'] != SESSION_ID) {
     header('Cache-Control: max-age=0, public');
 }
 
-echo json_encode($bill);
+api_json_success($bill);

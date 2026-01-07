@@ -107,5 +107,5 @@ while ($bill = mysqli_fetch_assoc($result)) {
     $portfolio['bills'][] = array_map('stripslashes', $bill);
 }
 
-echo json_encode($portfolio);
 // Send the JSON.
+api_json_success($portfolio);

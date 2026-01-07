@@ -82,4 +82,4 @@ $clips = array_values($clips);
 $clips = (object) $clips;
 
 # Send the JSON.
-echo json_encode($clips);
+api_json_success($clips);

@@ -45,4 +45,4 @@ while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bills[] = array_map('stripslashes', $bill);
 }
 
-echo json_encode($bills);
+api_json_success($bills);

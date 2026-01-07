@@ -36,3 +36,4 @@ if (empty($suggestions)) {
 
 # Send the JSON.
 echo json_encode($suggestions);
+api_json_success($suggestions);

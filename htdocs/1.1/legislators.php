@@ -58,7 +58,7 @@ if ($result !== false && mysqli_num_rows($result) > 0) {
 
 else {
     $legislators = 'Richmond Sunlight has no record of any legislators. Yes, we are also troubled by this.';
+    api_json_success($legislators);
 }
 
-echo json_encode($legislators);
 api_json_error(404, 'No Legislators Found', 'Richmond Sunlight has no record of any legislators.');

@@ -76,4 +76,4 @@ if ($activity !== false) {
 $legislator['rs_id'] = $legislator['id'];
 $legislator['id'] = $legislator['shortname'];
 
-echo json_encode($legislator);
+api_json_success($legislator);
