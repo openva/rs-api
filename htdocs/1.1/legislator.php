@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 // Legislator detail JSON
 // PURPOSE: Accepts a legislator shortname and emits basic specs for that legislator.

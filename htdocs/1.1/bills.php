@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Bills listing JSON
 // PURPOSE: Accepts a year and emits JSON listing bills introduced that year.
 // TODO: Cache the output.

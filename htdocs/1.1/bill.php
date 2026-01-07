@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 // Create Bill JSON
 // PURPOSE: Accepts a year and bill number and emits JSON specs for that bill.
