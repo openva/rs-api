@@ -34,6 +34,12 @@ paths:
                 items:
                   type: string
                 example: ["crime", "firearm", "weapon"]
+        '400':
+          description: Invalid term
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -69,8 +75,17 @@ paths:
                       type: string
                     outcome:
                       type: string
+                    chamber:
+                      type: string
+                      enum: [house, senate]
                     legislator:
                       type: string
+        '400':
+          description: Invalid section format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -117,6 +132,12 @@ paths:
                     video_url:
                       type: string
                       format: uri
+        '400':
+          description: Invalid section format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -162,6 +183,12 @@ paths:
                           type: string
                         id:
                           type: string
+        '400':
+          description: Invalid year
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -222,6 +249,12 @@ paths:
                           type: string
                         time_end:
                           type: string
+        '400':
+          description: Invalid bill parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -230,6 +263,13 @@ paths:
       tags: [Legislators]
       summary: List all legislators
       description: Available in v1.1 only
+      parameters:
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: '^[0-9]{4}$'
       responses:
         '200':
           description: List of legislators found
@@ -251,6 +291,12 @@ paths:
                       type: string
                     district:
                       type: string
+        '400':
+          description: Invalid year
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -293,8 +339,86 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /vote/{year}/{lisId}.json:
+    get:
+      tags: [Votes]
+      summary: Get vote details
+      parameters:
+        - name: year
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[0-9]{4}$'
+        - name: lisId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[0-9]{1,6}$'
+      responses:
+        '200':
+          description: Vote found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chamber:
+                    type: string
+                    enum: [house, senate]
+                  outcome:
+                    type: string
+                  tally:
+                    type: string
+                  legislators:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        shortname:
+                          type: string
+                        vote:
+                          type: string
+                        party:
+                          type: string
+                          enum: [D, R, I]
+                        chamber:
+                          type: string
+                          enum: [house, senate]
+                        district:
+                          type: string
+                        address:
+                          type: string
+                        started:
+                          type: string
+                          description: Four-digit year the legislator started service
+        '400':
+          description: Invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          required: [message]
+          properties:
+            message:
+              type: string
+              example: "Invalid parameter"
+            details:
+              type: string
+              example: "Parameter year must be a 4-digit year."
     BillSummary:
       type: object
       properties:
@@ -335,7 +459,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/schemas/ErrorResponse'
 
 tags:
   - name: Bills
