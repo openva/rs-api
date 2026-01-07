@@ -26,9 +26,9 @@ define('SESSION_END', '2025-02-25');
 define('LIS_FTP_USERNAME', '');
 define('LIS_FTP_PASSWORD', '');
 
-// Database connection - uses Docker service name 'db'
-define('PDO_DSN', 'mysql:host=db;dbname=richmondsunlight');
-define('PDO_SERVER', 'db');
+// Database connection - uses Docker container name 'rs_db'
+define('PDO_DSN', 'mysql:host=rs_db;dbname=richmondsunlight');
+define('PDO_SERVER', 'rs_db');
 define('PDO_USERNAME', 'ricsun');
 define('PDO_PASSWORD', 'password');
 define('MYSQL_DATABASE', 'richmondsunlight');
@@ -36,8 +36,8 @@ define('MYSQL_DATABASE', 'richmondsunlight');
 // The API URL (self-referential in this context)
 define('API_URL', 'http://localhost:5001/');
 
-// Memcached connection - uses Docker service name 'memcached'
-define('MEMCACHED_SERVER', 'memcached');
+// Memcached connection - uses Docker container name 'rs_memcached'
+define('MEMCACHED_SERVER', 'rs_memcached');
 define('MEMCACHED_PORT', '11211');
 
 // Configure PHP sessions to use Memcached
