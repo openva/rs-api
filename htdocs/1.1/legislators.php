@@ -26,10 +26,10 @@ $sql = 'SELECT representatives.id, representatives.shortname, representatives.na
 			ON representatives.district_id=districts.id ';
 if ($year !== null) {
     $sql .= 'WHERE representatives.date_started <= "' . $year . '-01-01"
-		AND (
-			representatives.date_ended >= "' . $year . '-01-01"
-			OR representatives.date_ended IS NULL
-		) ';
+        AND (
+            representatives.date_ended >= "' . $year . '-01-01"
+            OR representatives.date_ended IS NULL
+        ) ';
 }
 $sql .= 'ORDER BY representatives.name ASC';
 
