@@ -11,10 +11,16 @@ header('Content-type: application/json');
 // Connect
 $db = api_db();
 
+$section = filter_input(
+    INPUT_GET,
+    'section',
+    FILTER_VALIDATE_REGEXP,
+    ['options' => ['regexp' => '/^[.0-9a-z-]{3,20}$/']]
+);
+if ($section === false || $section === null) {
+    api_json_error(400, 'Invalid section', 'Parameter section must be 3-20 characters, a-z, 0-9, dots, or dashes.');
+}
 
-$section = filter_input(INPUT_GET, 'section', FILTER_VALIDATE_REGEXP, [
-    'options' => ['regexp' => '/^[.0-9a-z-]{3,20}$/']
-]);
 }
 $section_safe = mysqli_real_escape_string($db, $section);
 

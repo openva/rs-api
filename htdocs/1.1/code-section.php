@@ -12,14 +12,16 @@ header('Content-type: application/json');
 $db = api_db();
 
 // Localize variables
+$section = filter_input(
+    INPUT_GET,
+    'section',
+    FILTER_VALIDATE_REGEXP,
+    ['options' => ['regexp' => '/^[.0-9a-z-]{3,20}$/']]
+);
+if ($section === false || $section === null) {
+    api_json_error(400, 'Invalid section', 'Parameter section must be 3-20 characters, a-z, 0-9, dots, or dashes.');
+}
 
-$section = filter_input(INPUT_GET, 'section', FILTER_VALIDATE_REGEXP, [
-    'options' => ['regexp' => '/^[.0-9a-z-]{3,20}$/']
-]);
-if ($section === false) {
-    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
-    exit();
 }
 $section_safe = mysqli_real_escape_string($db, $section);
 

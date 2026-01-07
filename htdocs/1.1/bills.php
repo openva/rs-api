@@ -13,13 +13,16 @@ require_once __DIR__ . '/functions.inc.php';
 
 header('Content-type: application/json');
 
-$year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
-    'options' => ['regexp' => '/^\d{4}$/']
-]);
 // Connect
 $db = api_db();
 
 // Localize variables
+$year = filter_input(
+    INPUT_GET,
+    'year',
+    FILTER_VALIDATE_REGEXP,
+    ['options' => ['regexp' => '/^\d{4}$/']]
+);
 if ($year === false || $year === null) {
     api_json_error(400, 'Invalid year', 'Parameter year must be a 4-digit year.');
 }
