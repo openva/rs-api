@@ -9,6 +9,7 @@ declare(strict_types=1);
 // Includes
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
+require_once __DIR__ . '/functions.inc.php';
 
 header('Content-type: application/json');
 
