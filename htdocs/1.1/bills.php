@@ -20,6 +20,8 @@ $year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
 $db = api_db();
 
 // Localize variables
+if ($year === false || $year === null) {
+    api_json_error(400, 'Invalid year', 'Parameter year must be a 4-digit year.');
 }
 
 $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status, bills.outcome,
