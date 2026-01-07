@@ -7,8 +7,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-$database = new Database();
-$db = $database->connect_mysqli();
+$db = api_db();
 
 $year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^\d{4}$/']

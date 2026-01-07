@@ -11,9 +11,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-$database = new Database();
-$db = $database->connect_mysqli();
 // Connect
+$db = api_db();
 
 $shortname = filter_input(INPUT_GET, 'shortname', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^[a-z-]{3,30}$/']

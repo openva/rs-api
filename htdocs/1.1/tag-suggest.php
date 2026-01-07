@@ -14,10 +14,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-$database = new Database();
-$db = $database->connect_mysqli();
 // DECLARATIVE FUNCTIONS
 // Run those functions that are necessary prior to loading this specific page.
+$db = api_db();
 
 /*
  * Localize variables

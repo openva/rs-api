@@ -13,8 +13,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-$db = $database->connect_mysqli();
 // Connect to the database.
+$db = api_db();
 
 // Localize variables.
 $year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [

@@ -7,8 +7,9 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-$database = new Database();
-$db = $database->connect_mysqli();
+// Connect
+$db = api_db();
+
 
 $section = filter_input(INPUT_GET, 'section', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^[.0-9a-z-]{3,20}$/']
