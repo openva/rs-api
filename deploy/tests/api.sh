@@ -65,6 +65,8 @@ check "/bills/2025.json" ".[0] | has(\"title\")" 'true'
 check "/bills/2025.json" ".[0] | has(\"status\")" 'true'
 check "/bills/2025.json" "any(.[]; .number == \"sb839\")" 'true'
 check "/bills/2025.json" "any(.[]; .number == \"hb1591\")" 'true'
+check "/bills/2025.json" "all(.[]; .number | test(\"^[a-z]+[0-9]+$\"))" 'true'
+check "/bills/2025.json" "all(.[]; .chamber | test(\"^(house|senate)$\"))" 'true'
 
 # Legislators list endpoint tests
 check "/legislators.json?year=2025" "type" '"array"'
@@ -75,6 +77,7 @@ check "/legislators.json?year=2025" ".[0] | has(\"chamber\")" 'true'
 check "/legislators.json?year=2025" ".[0] | has(\"party\")" 'true'
 check "/legislators.json?year=2025" ".[0] | has(\"site_url\")" 'true'
 check "/legislators.json?year=2025" "any(.[]; .id == \"rcdeeds\")" 'true'
+check "/legislators.json?year=2025" "all(.[]; .district | type == \"string\")" 'true'
 
 # Code section endpoint tests (bills citing a section)
 check "/bysection/22.1-277.json" "type" '"array"'
@@ -84,6 +87,7 @@ check "/bysection/22.1-277.json" ".[0] | has(\"year\")" 'true'
 check "/bysection/22.1-277.json" ".[0] | has(\"catch_line\")" 'true'
 check "/bysection/22.1-277.json" ".[0] | has(\"url\")" 'true'
 check "/bysection/22.1-277.json" "any(.[]; .number == \"sb738\")" 'true'
+check "/bysection/22.1-277.json" "all(.[]; .number | test(\"^[a-z]+[0-9]+$\"))" 'true'
 
 # Tag suggest endpoint tests
 # Note: The htaccess rewrite has been fixed, but Tags::get_suggestions() returns false
@@ -121,19 +125,55 @@ check_404() {
     fi
 }
 
-# Invalid bill numbers should return 404
-check_404 "/bill/2025/invalid.json"
-check_404 "/bill/2025/xx999.json"
-check_404 "/bill/9999/hb1.json"
+check_status() {
+    local path="$1"
+    local expected_status="$2"
+    local expected_substr="${3:-}"
+    local url="${API_BASE}${path}"
+
+    raw="$(curl --silent --show-error --location --write-out 'HTTPSTATUS:%{http_code}' "$url")" || true
+    status="${raw##*HTTPSTATUS:}"
+    body="${raw%HTTPSTATUS:*}"
+
+    if [ "$status" != "$expected_status" ]; then
+        echo "❌: $url expected HTTP $expected_status, got $status"
+        echo "$body"
+        ERRORED=true
+        return
+    fi
+
+    if [ -n "$expected_substr" ] && ! printf '%s' "$body" | grep -q "$expected_substr"; then
+        echo "❌: $url expected body to contain \"$expected_substr\""
+        echo "$body"
+        ERRORED=true
+        return
+    fi
+
+    echo "✅: $url returns $expected_status as expected"
+}
+
+# Invalid bill numbers should return 400 when the pattern is invalid; well-formed but missing should be 404
+check_status "/bill/2025/invalid.json" 400
+check_status "/bill/2025/xx999.json" 400
+check_status "/bill/9999/hb1.json" 404
 
 # Invalid legislator should return 404
 check_404 "/legislator/nonexistent.json"
+# Invalid legislator year should return 400
+check_status "/legislators.json?year=20ab" 400
 
-# Invalid code section format should return 404
-check_404 "/bysection/invalid!section.json"
+# Invalid code section format should return 400
+check_status "/bysection/invalid!section.json" 400
 
 # Non-existent code section should return 404
 check_404 "/bysection/99.9-999.json"
+
+# Additional endpoints should return errors for missing data
+check_404 "/section-video/22.1-277.json"
+check_404 "/photosynthesis/pwt01.json"
+check "/tag-suggest?term=cell" "type" '"array"'
+check "/tag-suggest?term=cell" "length > 0" 'true'
+check_status "/vote/2025/999999.json" 404
 
 # =============================================================================
 # Field value validation tests
