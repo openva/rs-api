@@ -5,13 +5,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-# DECLARATIVE FUNCTIONS
-# Run those functions that are necessary prior to loading this specific
-# page.
 $database = new Database();
 $db = $database->connect_mysqli();
+// Connect
 
-# LOCALIZE VARIABLES
+// Localize variables
 $hash = filter_input(INPUT_GET, 'hash', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^[a-z0-9]{4,16}$/']
 ]);
@@ -99,13 +97,13 @@ if ($result === false || mysqli_num_rows($result) == 0) {
     exit;
 }
 
-# Build up a list of all bills.
 $portfolio['bills'] = array();
+// Build up a list of all bills.
 while ($bill = mysqli_fetch_assoc($result)) {
     $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
     $bill['number'] = strtoupper($bill['number']);
     $portfolio['bills'][] = array_map('stripslashes', $bill);
 }
 
-# Send the JSON.
 echo json_encode($portfolio);
+// Send the JSON.

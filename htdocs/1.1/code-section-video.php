@@ -1,21 +1,14 @@
 <?php
 
 
-# INCLUDES
-# Include any files or libraries that are necessary for this specific
-# page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-# DECLARATIVE FUNCTIONS
-# Run those functions that are necessary prior to loading this specific
-# page.
 $database = new Database();
 $db = $database->connect_mysqli();
 
-# LOCALIZE VARIABLES
 $section = filter_input(INPUT_GET, 'section', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^[.0-9a-z-]{3,20}$/']
 ]);
@@ -51,8 +44,8 @@ if ($result === false || mysqli_num_rows($result) == 0) {
     exit;
 }
 
-# Build up a list of all video clips
 $clips = array();
+// Build up a list of all video clips
 while ($clip = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $clip['bill_url'] = 'https://www.richmondsunlight.com/bill/' . $clip['year'] . '/'
         . $clip['bill_number'] . '/';
@@ -64,9 +57,6 @@ while ($clip = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $clips[] = array_map('stripslashes', $clip);
 }
 
-# Eliminate any clip that is a subset of another one. For example, we might have gotten a list of
-# 10 clips about a given bill, 1 of which is the entire discussion, and 9 of which are individual
-# clips of each legislator speaking about the bill. We only want that entire discussion here.
 foreach ($clips as $key => &$clip) {
     foreach ($clips as $candidate) {
         if ($candidate['video_url'] == $clip['video_url']) {
@@ -79,15 +69,15 @@ foreach ($clips as $key => &$clip) {
             ) {
                 unset($clips[$key]);
             }
+// Eliminate any clip that is a subset of another one. For example, we might have gotten a list of
+// 10 clips about a given bill, 1 of which is the entire discussion, and 9 of which are individual
+// clips of each legislator speaking about the bill. We only want that entire discussion here.
 
             break(2);
         }
     }
 }
 
-/*
- * Reindex the array, in case we've eliminated any duplicate clips.
- */
 $clips = array_values($clips);
 
 # Make this an object.

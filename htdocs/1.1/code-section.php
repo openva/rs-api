@@ -1,21 +1,16 @@
 <?php
 
 
-# INCLUDES
-# Include any files or libraries that are necessary for this specific
-# page to function.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-# DECLARATIVE FUNCTIONS
-# Run those functions that are necessary prior to loading this specific
-# page.
 $database = new Database();
 $db = $database->connect_mysqli();
+// Connect
+// Localize variables
 
-# LOCALIZE VARIABLES
 $section = filter_input(INPUT_GET, 'section', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^[.0-9a-z-]{3,20}$/']
 ]);
@@ -26,8 +21,6 @@ if ($section === false) {
 }
 $section_safe = mysqli_real_escape_string($db, $section);
 
-# Select the bill data from the database.
-// Use proper bill number sorting
 $sql = 'SELECT sessions.year, bills.number, bills.catch_line, bills.summary, bills.outcome,
 		representatives.name_formatted AS legislator
 		FROM bills
@@ -50,9 +43,6 @@ if ($result === false || mysqli_num_rows($result) == 0) {
     exit;
 }
 
-# Build up a listing of all bills.
-# The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
-# and indexed arrays.
 $bills = array();
 while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/' . $bill['number'] . '/';
@@ -60,5 +50,4 @@ while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bills[] = array_map('stripslashes', $bill);
 }
 
-# Send the JSON.
 echo json_encode($bills);

@@ -7,22 +7,17 @@
  * Displays the outcome of a vote for a given year
  **/
 
-/*
- * Includes
- */
+// Includes
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-# DECLARATIVE FUNCTIONS
-# Run those functions that are necessary prior to loading this specific page.
 $database = new Database();
 $db = $database->connect_mysqli();
+// Connect
 
-/*
- * Localize variables
- */
+// Localize variables
 $year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^\d{4}$/']
 ]);
@@ -45,10 +40,8 @@ if ($vote === false) {
     exit();
 }
 
-/*
- * Get detailed information about who voted how.
- */
 $vote['legislators'] = $vote_info->get_detailed();
+// Get detailed information about who voted how.
 
 
 # Send the JSON.

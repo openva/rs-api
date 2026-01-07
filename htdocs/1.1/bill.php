@@ -1,19 +1,21 @@
 <?php
 
 
-# INCLUDES
-# Include any files or libraries that are necessary for this specific page to function.
+// Create Bill JSON
+// PURPOSE: Accepts a year and bill number and emits JSON specs for that bill.
+// NOTES: Not intended for browser viewing; JSON only.
+// TODO: Add identical bills list and full status history.
+
+// Includes
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-# DECLARATIVE FUNCTIONS
-# Run those functions that are necessary prior to loading this specific page.
-$database = new Database();
 $db = $database->connect_mysqli();
+// Connect to the database.
 
-# LOCALIZE VARIABLES
+// Localize variables.
 $year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^\d{4}$/']
 ]);
@@ -34,29 +36,27 @@ if ($bill2->id === false) {
     exit();
 }
 
-# Get basic data about this bill.
+// Get basic data about this bill.
 $bill = $bill2->info();
 
-# Get a list of changes.
+// Get a list of changes.
 $bill2->text = $bill['full_text'];
 $changes = $bill2->list_changes();
 if ($changes !== false) {
     $bill['changes'] = $changes;
 }
 
-# Create a new video object.
+// Create a new video object.
 $video = new Video();
 
-# Get a list of videos for this bill.
+// Get a list of videos for this bill.
 $video->bill_id = $bill['id'];
 $bill['video'] = $video->by_bill();
 
-# If this is old data, we can cache it for up to a month.
 if ($bill['session_id'] != SESSION_ID) {
     header('Cache-Control: max-age=' . (60 * 60 * 24 * 30.5) . ', public');
 } else {
     header('Cache-Control: max-age=0, public');
 }
 
-# Send the JSON.
 echo json_encode($bill);

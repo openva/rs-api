@@ -7,18 +7,15 @@
  * Displays an autocomplete list of tags, based on the text entered so far.
  **/
 
-/*
- * Includes
- */
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-# DECLARATIVE FUNCTIONS
-# Run those functions that are necessary prior to loading this specific page.
 $database = new Database();
 $db = $database->connect_mysqli();
+// DECLARATIVE FUNCTIONS
+// Run those functions that are necessary prior to loading this specific page.
 
 /*
  * Localize variables

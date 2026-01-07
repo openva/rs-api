@@ -1,16 +1,18 @@
 <?php
 
+// Bills listing JSON
+// PURPOSE: Accepts a year and emits JSON listing bills introduced that year.
+// TODO: Cache the output.
+
+// Includes
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 
 header('Content-type: application/json');
 
-# DECLARATIVE FUNCTIONS
-# Run those functions that are necessary prior to loading this specific page.
 $database = new Database();
 $db = $database->connect_mysqli();
 
-# LOCALIZE VARIABLES
 $year = filter_input(INPUT_GET, 'year', FILTER_VALIDATE_REGEXP, [
     'options' => ['regexp' => '/^\d{4}$/']
 ]);
@@ -18,9 +20,10 @@ if ($year === false) {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
     readfile($_SERVER['DOCUMENT_ROOT'] . '/404.json');
     exit();
+// Connect
+// Localize variables
 }
 
-# Select the bill data from the database.
 $sql = 'SELECT bills.number, bills.chamber, bills.date_introduced, bills.status, bills.outcome,
 		bills.catch_line AS title, representatives.name_formatted AS patron,
 		representatives.shortname AS patron_id
@@ -41,22 +44,18 @@ if (mysqli_num_rows($result) == 0) {
 
 $bills = array();
 
-# The MYSQL_ASSOC variable indicates that we want just the associated array, not both associated
-# and indexed arrays.
 while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bill = array_map('stripslashes', $bill);
 
-    # Assign the patron data to a subelement.
     $bill['patron'] = array(
         'name' => $bill['patron'],
         'id' => $bill['patron_id'],
     );
 
-    # Eliminate the fields we no longer need.
     unset($bill['patron'], $bill['patron_id']);
 
     $bills[] = $bill;
 }
 
-# Send the JSON.
 echo json_encode($bills);
+// Send the JSON.
