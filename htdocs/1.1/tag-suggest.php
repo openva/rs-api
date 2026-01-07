@@ -14,6 +14,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once __DIR__ . '/functions.inc.php';
 
 header('Content-type: application/json');
+header('X-Api-Endpoint: tag-suggest');
 
 // DECLARATIVE FUNCTIONS
 // Run those functions that are necessary prior to loading this specific page.
