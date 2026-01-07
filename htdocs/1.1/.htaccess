@@ -11,5 +11,7 @@ RewriteRule ^legislators.json$ legislators.php [QSA]
 RewriteRule ^legislator/([a-z-]+).json$ legislator.php?shortname=$1 [QSA]
 RewriteRule ^vote/([0-9]{4})/([a-zA-Z0-9]{4,12}).json$ vote.php?year=$1&lis_id=$2 [QSA]
 
+ErrorDocument 404 default
+
 # By default, API data expires in just one hour.
 #Header set Cache-Control "max-age=360, public"

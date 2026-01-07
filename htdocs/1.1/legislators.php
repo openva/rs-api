@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// Legislators listing JSON
+// PURPOSE: Emits JSON with legislator basics; optional year filters incumbents.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once __DIR__ . '/functions.inc.php';
@@ -35,10 +37,10 @@ $sql .= 'ORDER BY representatives.name ASC';
 
 $result = mysqli_query($db, $sql);
 if ($result !== false && mysqli_num_rows($result) > 0) {
-    $legislators = array();
+    $legislators = [];
 
     while ($legislator = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-        $legislator = array_map('stripslashes', $legislator);
+        $legislator = array_map('api_stripslashes', $legislator);
 
         if ($legislator['date_started'] == '0000-00-00') {
             unset($legislator['date_started']);
@@ -53,12 +55,13 @@ if ($result !== false && mysqli_num_rows($result) > 0) {
         $legislator['id'] = $legislator['shortname'];
         unset($legislator['shortname']);
 
+        $legislator['district'] = (string) $legislator['district'];
+        $legislator['chamber'] = strtolower($legislator['chamber']);
+        $legislator['party'] = strtoupper($legislator['party']);
+
         $legislators[] = $legislator;
     }
-}
 
-else {
-    $legislators = 'Richmond Sunlight has no record of any legislators. Yes, we are also troubled by this.';
     api_cache_control_for_session(null);
     api_json_success($legislators);
 }

@@ -37,34 +37,50 @@ if ($leg_id === false) {
 
 // Return the legislator's data as an array.
 $legislator = $leg->info($leg_id);
+$legislator['district'] = isset($legislator['district']) ? (string) $legislator['district'] : null;
+$legislator['chamber'] = strtolower($legislator['chamber']);
+$legislator['party'] = strtoupper($legislator['party']);
 
-$sql = 'SELECT bills.id, bills.number, bills.catch_line,
 // Get this legislator's bills.
+$stmt = $db->prepare(
+    'SELECT bills.id, bills.number, bills.catch_line,
         DATE_FORMAT(bills.date_introduced, "%M %d, %Y") AS date_introduced,
         committees.name, sessions.year,
         (
             SELECT status
             FROM bills_status
-            WHERE bill_id=bills.id
+            WHERE bill_id = bills.id
             ORDER BY date DESC, id DESC
             LIMIT 1
         ) AS status
         FROM bills
         LEFT JOIN sessions
-            ON bills.session_id=sessions.id
+            ON bills.session_id = sessions.id
         LEFT JOIN committees
             ON bills.last_committee_id = committees.id
-        WHERE bills.chief_patron_id="' . $legislator['id'] . '"
+        WHERE bills.chief_patron_id = ?
         ORDER BY sessions.year DESC,
         SUBSTRING(bills.number FROM 1 FOR 2) ASC,
-        CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC';
-$result = mysqli_query($db, $sql);
-if (mysqli_num_rows($result) > 0) {
-    $legislator['bills'] = array();
+        CAST(LPAD(SUBSTRING(bills.number FROM 3), 4, "0") AS unsigned) ASC'
+);
+if ($stmt === false) {
+    api_json_error(500, 'Database error');
+}
+
+$stmt->bind_param('i', $legislator['id']);
+$result = $stmt->execute();
+if ($result === false) {
+    api_json_error(500, 'Database error');
+}
+
+$result = $stmt->get_result();
+if ($result !== false && $result->num_rows > 0) {
+    $legislator['bills'] = [];
     while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
         $bill['url'] = 'https://www.richmondsunlight.com/bill/' . $bill['year'] . '/'
             . $bill['number'] . '/';
-        $bill['number'] = strtoupper($bill['number']);
+        $bill['number'] = strtolower($bill['number']);
+        $bill['year'] = (string) $bill['year'];
         $legislator['bills'][] = (array) $bill;
     }
 }

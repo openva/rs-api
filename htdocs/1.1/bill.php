@@ -36,6 +36,8 @@ if ($bill2->id === false) {
 
 // Get basic data about this bill.
 $bill = $bill2->info();
+$bill['number'] = mb_strtolower((string) $bill['number']);
+$bill['year'] = (string) $bill['year'];
 
 // Get a list of changes.
 $bill2->text = $bill['full_text'];
