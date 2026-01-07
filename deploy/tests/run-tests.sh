@@ -10,6 +10,12 @@ cd "$DIR" || exit
 
 ERRORED=false
 
+# Validate OpenAPI YAML syntax
+if ! ruby -ryaml -e 'YAML.load_file("../../htdocs/openapi.yaml")' >/dev/null 2>&1; then
+    echo "OpenAPI YAML validation failed"
+    exit 1
+fi
+
 # Run API endpoint tests
 if ! ./api.sh; then
     ERRORED=true
