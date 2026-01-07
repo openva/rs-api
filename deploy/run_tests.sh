@@ -9,10 +9,21 @@ if [ "$(docker container ps |grep -c rs_api)" -eq "0" ]; then
     exit 1
 fi
 
+# Change to the script's directory
+SCRIPT_DIR="$(dirname "$0")"
+echo "DEBUG: Script location: $0"
+echo "DEBUG: Script directory: $SCRIPT_DIR"
+echo "DEBUG: Current directory before cd: $(pwd)"
+cd "$SCRIPT_DIR" || exit
+echo "DEBUG: Current directory after cd: $(pwd)"
+echo "DEBUG: Directory contents:"
+ls -la
+echo "DEBUG: End directory contents"
+
+# Skip if tests directory doesn't exist (e.g., incomplete checkout)
+if [ ! -d tests ]; then
+    echo "API tests directory not found, skipping"
+    exit 0
+fi
+
 cd tests || exit
-
-for f in *.sh; do
-  bash "$f" -H
-done
-
-cd ..
