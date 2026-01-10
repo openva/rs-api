@@ -9,5 +9,5 @@ docker compose down
 
 echo "Containers stopped."
 echo ""
-echo "To also remove the database volume (all data), run:"
-echo "  docker compose down -v"
+echo "To also stop shared db/memcached and remove the database volume (all data), run:"
+echo "  docker compose -f docker-compose.shared.yml down -v"

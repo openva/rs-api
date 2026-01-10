@@ -1,0 +1,43 @@
+services:
+  # Database
+  db:
+    build:
+      context: deploy/
+      dockerfile: MySQL.Dockerfile
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    container_name: rs_db
+    networks:
+      - rs_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      start_period: 30s
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # Memcached for sessions/cache
+  memcached:
+    image: memcached:1.6-alpine
+    command: ["memcached", "-m", "128", "-p", "11211", "-u", "memcache"]
+    ports:
+      - "11211:11211"
+    container_name: rs_memcached
+    networks:
+      - rs_network
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 11211 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  db_data: {}
+
+networks:
+  rs_network:
+    external: true
+    name: rs_network
