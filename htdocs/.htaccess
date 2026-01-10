@@ -20,3 +20,4 @@ Header add Access-Control-Allow-Origin "*"
 <IfModule pagespeed_module>
   ModPagespeed off
 </IfModule>
+php_value include_path ".:/var/www/html/includes/"
