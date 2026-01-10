@@ -366,8 +366,10 @@ The API is documented in `htdocs/openapi.yaml`. When adding or modifying endpoin
 This will:
 1. Copy SQL test data from `richmondsunlight.com`
 2. Copy the `includes/` directory from `richmondsunlight.com`
-3. Build and start the API, database, and Memcached containers
+3. Build and start the API container, and start or build shared DB/Memcached as needed
 4. Configure the API for the Docker environment
+
+Shared containers live in `docker-compose.shared.yml` for reuse across repos.
 
 ### Stopping the Environment
 
@@ -377,7 +379,7 @@ This will:
 
 To also remove the database volume (all data):
 ```bash
-docker compose down -v
+docker compose -f docker-compose.shared.yml down -v
 ```
 
 ### Container Services
@@ -401,7 +403,7 @@ API_BASE="http://localhost:5001/1.1" ./deploy/tests/run-tests.sh
 View container logs:
 ```bash
 docker compose logs api
-docker compose logs db
+docker compose -f docker-compose.shared.yml logs db
 ```
 
 Rebuild containers after Dockerfile changes:
