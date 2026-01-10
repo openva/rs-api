@@ -15,7 +15,7 @@ services:
       - type: bind
         source: ./htdocs/
         target: /var/www/html/
-    container_name: rs_api
+    container_name: rs_api_api
     networks:
       - rs_network
     healthcheck:
@@ -35,7 +35,7 @@ services:
     restart: always
     ports:
       - "3306:3306"
-    container_name: rs_db
+    container_name: rs_api_db
     networks:
       - rs_network
     healthcheck:
@@ -51,7 +51,7 @@ services:
     command: ["memcached", "-m", "128", "-p", "11211", "-u", "memcache"]
     ports:
       - "11211:11211"
-    container_name: rs_memcached
+    container_name: rs_api_memcached
     networks:
       - rs_network
     healthcheck:
