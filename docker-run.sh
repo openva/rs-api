@@ -49,26 +49,8 @@ if [ "$DB_EXISTS" -gt 0 ] && [ "$API_EXISTS" -gt 0 ] && [ "$MEMCACHED_EXISTS" -g
     docker rm -f rs_api 2>/dev/null || true
     docker compose up -d --build api
 else
-    if [ "$DB_EXISTS" -gt 0 ]; then
-        echo "Reusing existing database container..."
-        docker start rs_db 2>/dev/null || true
-    else
-        echo "Building and starting database container..."
-        docker compose -f docker-compose.shared.yml up -d --build db
-    fi
-
-    if [ "$MEMCACHED_EXISTS" -gt 0 ]; then
-        echo "Reusing existing memcached container..."
-        docker start rs_memcached 2>/dev/null || true
-    else
-        echo "Building and starting memcached container..."
-        docker compose -f docker-compose.shared.yml up -d --build memcached
-    fi
-
-    # Always recreate the API container to ensure correct bind mount for this repo
-    echo "Building and starting API container..."
-    docker rm -f rs_api 2>/dev/null || true
-    docker compose up -d --build --no-deps api
+    echo "Building and starting Docker containers..."
+    docker compose up -d --build
 fi
 
 # Wait for MariaDB to be available
