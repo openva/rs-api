@@ -46,6 +46,12 @@ if ($changes !== false) {
     $bill['changes'] = $changes;
 }
 
+// Get a narrative of the bill's status history.
+$narrative = $bill2->statusNarrative();
+if ($narrative !== false) {
+    $bill['narrative'] = nl2p(htmlspecialchars($narrative, ENT_QUOTES, 'UTF-8'));
+}
+
 // Create a new video object.
 $video = new Video();
 
