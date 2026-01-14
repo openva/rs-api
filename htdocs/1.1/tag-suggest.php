@@ -33,7 +33,12 @@ if ($fragment === false || $fragment === null) {
 
 $suggestions = [];
 $stmt = $db->prepare(
-    'SELECT tag FROM tags WHERE tag LIKE CONCAT(?, "%") ORDER BY tag ASC LIMIT 10'
+    'SELECT tag, COUNT(*) AS number
+            FROM tags
+            WHERE tag LIKE CONCAT(?, "%")
+            GROUP BY tag
+            ORDER BY number DESC
+            LIMIT 10'
 );
 if ($stmt === false) {
     api_json_error(500, 'Database error');
