@@ -1,4 +1,4 @@
-FROM php:8-apache
+FROM php:8.5.3RC1-apache
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql && a2enmod rewrite && a2enmod expires && a2enmod headers
 
