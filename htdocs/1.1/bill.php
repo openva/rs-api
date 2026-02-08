@@ -52,6 +52,12 @@ if ($narrative !== false) {
     $bill['narrative'] = nl2p(htmlspecialchars($narrative, ENT_QUOTES, 'UTF-8'));
 }
 
+// Get all news articles about this bill.
+$news = $bill2->news();
+if ($news !== false) {
+    $bill['news'] = $news;
+}
+
 // Create a new video object.
 $video = new Video();
 
