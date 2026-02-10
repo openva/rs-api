@@ -63,7 +63,7 @@ done
 sleep 3
 
 # Run the API setup - inline commands that work whether container was built here or from richmondsunlight.com
-API_ID=$(docker ps | grep rs_api | cut -d " " -f 1)
+API_ID=$(docker ps --filter "name=rs_api_api" --format '{{.ID}}')
 if [ -n "$API_ID" ]; then
     echo "Configuring API container..."
     docker exec "$API_ID" bash -c '
