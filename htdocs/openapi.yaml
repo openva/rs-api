@@ -339,6 +339,61 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /videos.json:
+    get:
+      tags: [Videos]
+      summary: List videos
+      description: Returns a list of all videos, optionally filtered by year.
+      parameters:
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: string
+            pattern: '^\d{4}$'
+          description: Filter videos to a specific 4-digit year
+      responses:
+        '200':
+          description: Videos found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    date:
+                      type: string
+                      format: date
+                    chamber:
+                      type: string
+                      enum: [house, senate]
+                    committee:
+                      type: string
+                    title:
+                      type: string
+                    path:
+                      type: string
+                      format: uri
+                    description:
+                      type: string
+                    width:
+                      type: string
+                    height:
+                      type: string
+                    sponsor:
+                      type: string
+        '400':
+          description: Invalid year
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /vote/{year}/{lisId}.json:
     get:
       tags: [Votes]
@@ -470,3 +525,5 @@ tags:
     description: Operations about code sections
   - name: Tags
     description: Operations about tags
+  - name: Videos
+    description: Operations about videos
