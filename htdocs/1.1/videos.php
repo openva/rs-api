@@ -48,7 +48,7 @@ if ($result !== false && mysqli_num_rows($result) > 0) {
         $video = array_map('api_stripslashes', $video);
 
         // Anything with a /video/ suffix is in the video S3 bucket
-        if (substr($video['path'], 0, 7) == '/video/') {
+        if (isset($video['path']) && substr($video['path'], 0, 7) == '/video/') {
             $video['path'] = str_replace('/video/', 'https://video.richmondsunlight.com/', $video['path']);
         }
 
