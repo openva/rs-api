@@ -88,8 +88,7 @@ jobs:
     - name: Deploy via CodeDeploy
       run: |
         aws deploy push --application-name RS-API \
-        --s3-location s3://deploy.richmondsunlight.com/rs-api-master.zip \
-        --ignore-hidden-files
+        --s3-location s3://deploy.richmondsunlight.com/rs-api-master.zip
         aws deploy create-deployment \
         --application-name RS-API \
         --deployment-group-name RS-API-Fleet \
