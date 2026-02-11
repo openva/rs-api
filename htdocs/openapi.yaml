@@ -339,6 +339,62 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /video/{id}.json:
+    get:
+      tags: [Videos]
+      summary: Get a single video
+      description: Returns details for a single video by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Numeric video ID
+      responses:
+        '200':
+          description: Video found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  date:
+                    type: string
+                    format: date
+                  chamber:
+                    type: string
+                    enum: [house, senate]
+                  committee:
+                    type: string
+                  title:
+                    type: string
+                  path:
+                    type: string
+                    format: uri
+                  description:
+                    type: string
+                  width:
+                    type: string
+                  height:
+                    type: string
+                  sponsor:
+                    type: string
+                  has_transcript:
+                    type: boolean
+                  is_indexed:
+                    type: boolean
+        '400':
+          description: Invalid ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /videos.json:
     get:
       tags: [Videos]
@@ -385,6 +441,10 @@ paths:
                       type: string
                     sponsor:
                       type: string
+                    has_transcript:
+                      type: boolean
+                    is_indexed:
+                      type: boolean
         '400':
           description: Invalid year
           content:

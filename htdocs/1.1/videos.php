@@ -29,7 +29,13 @@ $sql = 'SELECT
             files.description,
             files.width,
             files.height,
-            files.sponsor
+            files.sponsor,
+            (files.transcript IS NOT NULL) AS has_transcript,
+            EXISTS(
+                SELECT 1 FROM video_index
+                WHERE video_index.file_id = files.id
+                AND video_index.linked_id IS NOT NULL
+            ) AS is_indexed
         FROM files
         LEFT JOIN committees
             ON files.committee_id=committees.id
@@ -51,6 +57,9 @@ if ($result !== false && mysqli_num_rows($result) > 0) {
         if (isset($video['path']) && substr($video['path'], 0, 7) == '/video/') {
             $video['path'] = str_replace('/video/', 'https://video.richmondsunlight.com/', $video['path']);
         }
+
+        $video['has_transcript'] = (bool) $video['has_transcript'];
+        $video['is_indexed'] = (bool) $video['is_indexed'];
 
         $videos[] = $video;
     }

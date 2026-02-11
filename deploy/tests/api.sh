@@ -91,7 +91,7 @@ check "/bysection/22.1-277.json" "all(.[]; .number | test(\"^[a-z]+[0-9]+$\"))" 
 
 # Tag suggest endpoint tests
 # Note: The htaccess rewrite has been fixed, but Tags::get_suggestions() returns false
-# for the test data. The Tags class is in includes/ (from richmondsunlight.com).
+# for the test data.
 # TODO: Investigate Tags class behavior, then enable these tests:
 # check "/tag-suggest?term=cell" "type" '"array"'
 # check "/tag-suggest?term=cell" "length > 0" 'true'
@@ -110,6 +110,24 @@ check "/bill/2025/hb1910.json" ".status" '"signed by governor"'
 check "/bill/2025/hb1910.json" ".outcome" '"passed"'
 check "/bill/2025/hb1894.json" ".status" '"vetoed by governor"'
 check "/bill/2025/hb1894.json" ".outcome" '"failed"'
+
+# Video list tests
+check "/videos.json" "type" '"array"'
+check "/videos.json" "length > 0" 'true'
+check "/videos.json" ".[0] | has(\"path\")" 'true'
+check "/videos.json" ".[0] | has(\"title\")" 'true'
+check "/videos.json" ".[0] | has(\"date\")" 'true'
+check "/videos.json" ".[0] | has(\"has_transcript\")" 'true'
+check "/videos.json" ".[0] | has(\"id\")" 'true'
+check "/videos.json" "any(.[]; .date == \"2024-01-09\")" 'true'
+check "/videos.json" "all(.[]; .is_indexed | type == \"boolean\")" 'true'
+
+# Video endpoint tests (single video)
+check "/video/14569.json" ".date" '"2024-01-12"'
+check "/video/14569.json" ".path" '"https://archive.org/details/rs-senate-20240112-senate-regular-session"'
+check "/video/14569.json" ".chamber" '"senate"'
+check "/video/14569.json" ".title" '"Senate Regular Session"'
+check "/video/14569.json" ".width" '"640"'
 
 # Error handling tests - expect 404 for invalid inputs
 check_404() {
