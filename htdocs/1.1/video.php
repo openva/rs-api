@@ -49,7 +49,7 @@ if ($result !== false && mysqli_num_rows($result) > 0) {
     if (isset($video['path']) && substr($video['path'], 0, 7) == '/video/') {
         $video['path'] = str_replace('/video/', 'https://video.richmondsunlight.com/', $video['path']);
     }
-    
+
     $video['has_transcript'] = (bool) $video['has_transcript'];
     if ($video['has_transcript']) {
         $transcript_sql = 'SELECT text, time_start, time_end, new_speaker, legislator_id
