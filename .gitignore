@@ -4,3 +4,5 @@ htdocs/includes/
 htdocs/getinfo.php
 htdocs/test.php
 .DS_Store
+deploy/local-test-records.sql
+deploy/video-records.sql
