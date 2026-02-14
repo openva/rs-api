@@ -2,6 +2,8 @@ FROM php:8-apache
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql && a2enmod rewrite && a2enmod expires && a2enmod headers
 
+RUN echo '<Directory /var/www/html>\n\tAllowOverride All\n</Directory>' >> /etc/apache2/apache2.conf
+
 RUN apt --fix-broken install
 RUN apt-get update
 RUN apt-get install -y git zip zlib1g-dev libmemcached-dev libssl-dev
