@@ -5,8 +5,7 @@ RUN docker-php-ext-install mysqli pdo pdo_mysql && a2enmod rewrite && a2enmod ex
 RUN echo '<Directory /var/www/html>\n\tAllowOverride All\n</Directory>' >> /etc/apache2/apache2.conf
 
 RUN apt --fix-broken install
-RUN apt-get update
-RUN apt-get install -y git zip zlib1g-dev libmemcached-dev libssl-dev
+RUN apt install -y git zip zlib1g-dev libmemcached-dev libssl-dev
 
 # Install PHP memcached extension
 RUN pecl install memcached && docker-php-ext-enable memcached
