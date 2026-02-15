@@ -12,8 +12,6 @@ ENV MYSQL_DATABASE richmondsunlight
 ENV MYSQL_USER ricsun
 ENV MYSQL_PASSWORD password
 
-RUN apt-get update && rm -rf /var/lib/apt/lists/
-
 EXPOSE 3306
 
 CMD ["mysqld"]
