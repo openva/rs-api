@@ -61,7 +61,7 @@ function api_cache_control_for_session(?int $session_id): void
         return;
     }
 
-    header('Cache-Control: max-age=0, public');
+    header('Cache-Control: max-age=3600, public');
 }
 
 /**
