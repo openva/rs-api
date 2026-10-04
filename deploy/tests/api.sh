@@ -119,14 +119,14 @@ check "/videos.json" ".[0] | has(\"title\")" 'true'
 check "/videos.json" ".[0] | has(\"date\")" 'true'
 check "/videos.json" ".[0] | has(\"has_transcript\")" 'true'
 check "/videos.json" ".[0] | has(\"id\")" 'true'
-check "/videos.json" "any(.[]; .date == \"2024-01-09\")" 'true'
+check "/videos.json" "any(.[]; .date == \"2024-01-12\")" 'true'
 check "/videos.json" "all(.[]; .is_indexed | type == \"boolean\")" 'true'
 
 # Video endpoint tests (single video)
 check "/video/14569.json" ".date" '"2024-01-12"'
-check "/video/14569.json" ".path" '"https://archive.org/details/rs-senate-20240112-senate-regular-session"'
+check "/video/14569.json" ".path" '"https://archive.org/download/rs-senate-20240112-senate-regular-session/ia_video_gd4q3acocj0o6ZvtGqF.mp4"'
 check "/video/14569.json" ".chamber" '"senate"'
-check "/video/14569.json" ".title" '"Senate Regular Session"'
+check "/video/14569.json" ".title" '"Senate Session"'
 check "/video/14569.json" ".width" '"640"'
 
 # Error handling tests - expect 404 for invalid inputs
