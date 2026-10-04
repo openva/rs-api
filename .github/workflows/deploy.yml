@@ -14,10 +14,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    # This job must never touch secrets: its artifact is downloadable by anyone
+    # with read access to the (public) repository.
     steps:
-      - uses: Firenza/secrets-to-env@v1.2.0
-        with:
-          secrets: ${{ toJSON(secrets) }}
       - name: Specify PHP version
         uses: shivammathur/setup-php@v2
         with:
@@ -25,7 +24,7 @@ jobs:
       - name: Make branch name available as Bash variable
         run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
       - run: >-
-          sudo apt-get update && 
+          sudo apt-get update &&
           sudo apt-get install -y php5.6-cli php5.6-curl php5.6-memcached php5.6-mysql yarn zip curl
       - uses: actions/checkout@v3
       - run: sudo apt-get update -qq
@@ -39,12 +38,7 @@ jobs:
       - run: cp richmondsunlight.com/htdocs/includes/*.php htdocs/includes/
       - run: rm -Rf richmondsunlight.com
       - run: find cron/*.php -print0 |xargs -0 -n1 -P8 php5.6 -l
-      - run: >-
-          ./deploy/config_variables.sh
-          && zip -qr latest.zip rs-machine . --exclude *.git* *.scannerwork*
-          && mkdir -p upload
-          && mv latest.zip upload/latest.zip
-      - name: Save secret-populated code for a subsequent deploy step
+      - name: Save the (secret-free) code for the deploy step
         uses: actions/upload-artifact@v4
         with:
           name: codebase
@@ -54,10 +48,22 @@ jobs:
     runs-on: ubuntu-24.04
     needs: build # Don't deploy unless the build succeeds
     steps:
-    - name: Get the secret-populated code
+    - name: Get the built code
       uses: actions/download-artifact@v4
       with:
         name: codebase
+    - name: Populate settings with secrets
+      # Secrets are injected here, in the deploy job only, using GitHub-native
+      # secret references. The resulting settings.inc.php is bundled straight to
+      # the private S3 deploy bucket below and never lands in a build artifact.
+      env:
+        PDO_DSN: ${{ secrets.PDO_DSN }}
+        PDO_SERVER: ${{ secrets.PDO_SERVER }}
+        PDO_USERNAME: ${{ secrets.PDO_USERNAME }}
+        PDO_PASSWORD: ${{ secrets.PDO_PASSWORD }}
+        MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+        API_URL: ${{ secrets.API_URL }}
+      run: bash deploy/config_variables.sh
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v3
       with:
