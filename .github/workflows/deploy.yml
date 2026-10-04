@@ -25,7 +25,7 @@ jobs:
         run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
       - run: >-
           sudo apt-get update &&
-          sudo apt-get install -y php5.6-cli php5.6-curl php5.6-memcached php5.6-mysql yarn zip curl
+          sudo apt-get install -y zip curl
       - uses: actions/checkout@v3
       - run: sudo apt-get update -qq
       - run: >-
@@ -37,7 +37,8 @@ jobs:
       - run: mkdir htdocs/includes/
       - run: cp richmondsunlight.com/htdocs/includes/*.php htdocs/includes/
       - run: rm -Rf richmondsunlight.com
-      - run: find cron/*.php -print0 |xargs -0 -n1 -P8 php5.6 -l
+      - name: Lint PHP
+        run: find htdocs -name '*.php' -print0 |xargs -0 -n1 -P8 php -l
       - name: Save the (secret-free) code for the deploy step
         uses: actions/upload-artifact@v4
         with:
