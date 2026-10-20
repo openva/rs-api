@@ -20,10 +20,10 @@ $shortname = filter_input(
     INPUT_GET,
     'shortname',
     FILTER_VALIDATE_REGEXP,
-    ['options' => ['regexp' => '/^[a-z-]{3,30}$/']]
+    ['options' => ['regexp' => '/^[a-z0-9-]{3,30}$/']]
 );
 if ($shortname === false || $shortname === null) {
-    api_json_error(404, 'Invalid legislator ID', 'Shortname must be 3-30 lowercase letters or dashes.');
+    api_json_error(404, 'Invalid legislator ID', 'Shortname must be 3-30 lowercase letters, numbers, or dashes.');
 }
 
 // Create a new legislator object.

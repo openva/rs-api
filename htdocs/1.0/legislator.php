@@ -27,7 +27,7 @@ $db = $database->connect_mysqli();
 
 # LOCALIZE VARIABLES
 $shortname = filter_input(INPUT_GET, 'shortname', FILTER_VALIDATE_REGEXP, [
-    'options' => ['regexp' => '/^[a-z-]{3,30}$/']
+    'options' => ['regexp' => '/^[a-z0-9-]{3,30}$/']
 ]);
 if ($shortname === false) {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');

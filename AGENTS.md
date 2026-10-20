@@ -144,7 +144,7 @@ Routing is handled via Apache `.htaccess` rewrites. URL patterns:
 |---------|---------|-------|
 | Bill numbers | `HB123`, `SB1234` | `[hsrbj]{1,3}\d{1,4}` |
 | Code sections | `18.2-174` | `[.0-9a-z-]{3,20}` |
-| Legislator shortnames | `rbbell` | `[a-z-]{3,30}` |
+| Legislator shortnames | `rbbell`, `wcwampler3` | `[a-z0-9-]{3,30}` |
 | Portfolio hashes | `abc123` | `[a-z0-9]{4,16}` |
 
 ## Database Patterns
@@ -200,7 +200,7 @@ Always validate input using `filter_input()`:
 ```php
 // String with regex validation
 $shortname = filter_input(INPUT_GET, 'shortname', FILTER_VALIDATE_REGEXP, [
-    'options' => ['regexp' => '/^[a-z-]{3,30}$/']
+    'options' => ['regexp' => '/^[a-z0-9-]{3,30}$/']
 ]);
 
 // Integer validation
