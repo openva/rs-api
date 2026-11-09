@@ -76,5 +76,4 @@ while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
 }
 
 // Send the JSON.
-api_cache_control_for_session(null);
 api_json_success($bills);

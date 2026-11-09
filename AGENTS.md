@@ -275,17 +275,16 @@ When modifying code that relies on classes or functions from `includes/`, docume
 
 ### HTTP Cache Headers
 
-Set appropriate cache headers based on data freshness:
+How long a response may be cached is set in Apache, in [htdocs/1.1/.htaccess](htdocs/1.1/.htaccess), and **not in PHP**. Don't call `header('Cache-Control: ...')` in an endpoint. (PHP used to set it, and mod_expires added a second `max-age`, so every response had two, and caches could use either.) mod_expires is off for the API, so each response has one `Cache-Control`.
 
-```php
-// Data from previous sessions (unlikely to change): cache for 30 days
-header('Cache-Control: max-age=2635200, public');
+| Response | `Cache-Control` |
+|---|---|
+| A bill from a past session (`/1.1/bill/{year}/...`) | `max-age=2635200, public` (30.5 days) |
+| A bill from the current session, and a Photosynthesis portfolio | `max-age=3600, public` (one hour) |
+| Everything else (lists, legislators, votes, video, ...) | `max-age=0, public` |
+| Anything other than a 200 (errors) | none |
 
-// Current session data (may change): no caching
-header('Cache-Control: max-age=0, public');
-```
-
-The `SESSION_ID` constant indicates the current legislative session.
+"The current session" is taken to be the current calendar year (Apache's `%{TIME_YEAR}`), since the session's year is in the bill's URL and Apache doesn't know `SESSION_ID`. To change a lifetime, edit the `Header set` lines. Because they use `<If>` and `expr=`, they need Apache 2.4.10 or later, and `AllowOverride` that permits them (a directive that isn't allowed makes every request a 500).
 
 ## Testing
 

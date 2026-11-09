@@ -15,5 +15,25 @@ RewriteRule ^videos.json$ videos.php [QSA]
 
 ErrorDocument 404 default
 
-# By default, API data expires in just one hour.
-#Header set Cache-Control "max-age=360, public"
+# CACHING
+# How long a response may be cached is set here, and only here. (PHP used to set it too, and mod_expires
+# added a second max-age, so a response had two, and caches could use either.) "Header set" applies to
+# 200 responses only (the "expr" on each line), so that a missing bill or a bad request isn't cached.
+ExpiresActive Off
+
+# By default, nothing is cached: lists and records can change at any time.
+Header set Cache-Control "max-age=0, public" "expr=%{REQUEST_STATUS} == 200"
+
+# A bill from a past session won't change: 30.5 days.
+<If "%{THE_REQUEST} =~ m#^[A-Z]+ /1\.1/bill/[0-9]{4}/#">
+    Header set Cache-Control "max-age=2635200, public" "expr=%{REQUEST_STATUS} == 200"
+</If>
+
+# A bill from the current session can change, as can portfolios: one hour. (The current session's year
+# is taken to be this year.)
+<If "%{THE_REQUEST} =~ m#^[A-Z]+ /1\.1/bill/([0-9]{4})/# && %{TIME_YEAR} == $1">
+    Header set Cache-Control "max-age=3600, public" "expr=%{REQUEST_STATUS} == 200"
+</If>
+<If "%{THE_REQUEST} =~ m#^[A-Z]+ /1\.1/photosynthesis/#">
+    Header set Cache-Control "max-age=3600, public" "expr=%{REQUEST_STATUS} == 200"
+</If>

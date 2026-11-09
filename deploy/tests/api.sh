@@ -274,6 +274,57 @@ check_content_type "/bysection/22.1-277.json"
 check_cors_header "/bill/2025/sb738.json"
 check_cors_header "/legislators.json?year=2025"
 
+# Verify Cache-Control headers. They're set in Apache (htdocs/1.1/.htaccess), not in PHP, so there's
+# exactly one per successful response, and none on an error. The value is either the header's whole
+# text, or "none".
+check_cache_control() {
+    local path="$1"
+    local expected="$2"
+    local url="${API_BASE}${path}"
+
+    headers="$(curl --silent --dump-header - --output /dev/null "$url" | tr -d '\r')"
+    count="$(printf '%s\n' "$headers" | grep -ic '^cache-control:' || true)"
+    value="$(printf '%s\n' "$headers" | grep -i '^cache-control:' | head -1 | sed 's/^[^:]*: *//' || true)"
+    expires="$(printf '%s\n' "$headers" | grep -ic '^expires:' || true)"
+
+    if [ "$expected" = "none" ]; then
+        if [ "$count" != "0" ]; then
+            echo "❌: $url should have no Cache-Control header, but has: $value"
+            ERRORED=true
+        else
+            echo "✅: $url has no Cache-Control header"
+        fi
+    elif [ "$count" != "1" ]; then
+        echo "❌: $url has $count Cache-Control headers, and should have exactly 1: $(printf '%s\n' "$headers" | grep -i '^cache-control:' | tr '\n' ' ')"
+        ERRORED=true
+    elif [ "$value" != "$expected" ]; then
+        echo "❌: $url has Cache-Control \"$value\", expected \"$expected\""
+        ERRORED=true
+    elif [ "$expires" != "0" ]; then
+        echo "❌: $url has an Expires header, which only duplicates Cache-Control"
+        ERRORED=true
+    else
+        echo "✅: $url has Cache-Control: $value"
+    fi
+}
+
+# A bill from a past session is cached for 30.5 days. One from the current year is cached for an hour.
+if [ "2025" = "$(date +%Y)" ]; then
+    check_cache_control "/bill/2025/hb41.json" "max-age=3600, public"
+else
+    check_cache_control "/bill/2025/hb41.json" "max-age=2635200, public"
+fi
+check_cache_control "/bill/2024/hb1.json" "max-age=2635200, public"
+
+# Everything else isn't cached.
+check_cache_control "/legislators.json?year=2025" "max-age=0, public"
+check_cache_control "/bills/2025.json" "max-age=0, public"
+check_cache_control "/legislator/rcdeeds.json" "max-age=0, public"
+
+# Errors aren't cached: a bad request, and a bill that doesn't exist.
+check_cache_control "/bill/2025/hb99999.json" "none"
+check_cache_control "/bill/2025/hb9999.json" "none"
+
 if [ "$ERRORED" = true ]; then
     exit 1
 fi

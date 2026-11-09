@@ -64,7 +64,6 @@ if ($result !== false && mysqli_num_rows($result) > 0) {
         $videos[] = $video;
     }
 
-    api_cache_control_for_session(null);
     api_json_success($videos);
 }
 

@@ -93,5 +93,4 @@ foreach ($clips as $key => $clip) {
 }
 $clips = array_values(array_diff_key($clips, $clips_to_remove));
 
-api_cache_control_for_session(null);
 api_json_success($clips);

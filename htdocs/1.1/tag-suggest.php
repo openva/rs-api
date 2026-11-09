@@ -60,5 +60,4 @@ if (empty($suggestions)) {
 }
 
 // Send the JSON.
-api_cache_control_for_session(null);
 api_json_success($suggestions);

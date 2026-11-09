@@ -65,5 +65,4 @@ while ($bill = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $bills[] = array_map('api_stripslashes', $bill);
 }
 
-api_cache_control_for_session(null);
 api_json_success($bills);

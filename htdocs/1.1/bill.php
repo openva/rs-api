@@ -65,6 +65,4 @@ $video = new Video();
 $video->bill_id = $bill['id'];
 $bill['video'] = $video->by_bill();
 
-api_cache_control_for_session((int) $bill['session_id']);
-
 api_json_success($bill);
