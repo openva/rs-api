@@ -96,8 +96,10 @@ jobs:
       run: |
         aws deploy push --application-name RS-API \
         --s3-location s3://deploy.richmondsunlight.com/rs-api-master.zip
-        aws deploy create-deployment \
+        deployment_id=$(aws deploy create-deployment \
         --application-name RS-API \
         --deployment-group-name RS-API-Fleet \
         --deployment-config-name CodeDeployDefault.OneAtATime \
-        --s3-location bucket=deploy.richmondsunlight.com,key=rs-api-master.zip,bundleType=zip
+        --s3-location bucket=deploy.richmondsunlight.com,key=rs-api-master.zip,bundleType=zip \
+        --query deploymentId --output text)
+        bash deploy/wait-for-deployment.sh "$deployment_id"
