@@ -39,11 +39,15 @@ jobs:
       - run: rm -Rf richmondsunlight.com
       - name: Lint PHP
         run: find htdocs -name '*.php' -print0 |xargs -0 -n1 -P8 php -l
+      # The artifact must include hidden files, or the .htaccess files (all of the API's routes) never
+      # reach the server. But not .git, which holds the checkout's GitHub token, and isn't deployed.
+      - run: rm -rf .git
       - name: Save the (secret-free) code for the deploy step
         uses: actions/upload-artifact@v4
         with:
           name: codebase
           path: .
+          include-hidden-files: true
 
   deploy:
     runs-on: ubuntu-24.04
