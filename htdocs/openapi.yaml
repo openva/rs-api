@@ -339,11 +339,194 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  /video/{id}.json:
+  /video/{slug}.json:
     get:
       tags: [Videos]
       summary: Get a single video
-      description: Returns details for a single video by its ID.
+      description: >
+        Returns everything about a single video, by its slug: the meeting it records, where to play
+        it, a guide to it (the bills taken up and the legislators who spoke, as identified by the
+        broadcast's chyrons), its transcript, and the day's minutes and other videos. A video that
+        hasn't been downloaded yet has the status "processing", and nothing to play.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[bcdfghjkmnpqrstvwxz2-9]{4}$'
+          description: The video's slug, four characters (e.g., k7qm), always including a letter
+      responses:
+        '200':
+          description: Video found
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/VideoSummary'
+                  - type: object
+                    properties:
+                      pending:
+                        type: array
+                        description: Parts of the video's guide that are still being prepared
+                        items:
+                          type: string
+                          enum: [transcript, bills, speakers]
+                      description:
+                        type: string
+                      width:
+                        type: integer
+                        nullable: true
+                      height:
+                        type: integer
+                        nullable: true
+                      license:
+                        type: string
+                      sponsor:
+                        type: string
+                        nullable: true
+                        description: Who paid for the video. May contain HTML (a link and a logo).
+                      media:
+                        type: object
+                        properties:
+                          mp4:
+                            type: string
+                            format: uri
+                            nullable: true
+                          youtube_id:
+                            type: string
+                            nullable: true
+                          poster:
+                            type: string
+                            format: uri
+                            nullable: true
+                      bills:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            start:
+                              type: number
+                              description: Seconds from the start of the video
+                            end:
+                              type: number
+                            number:
+                              type: string
+                            year:
+                              type: integer
+                              nullable: true
+                            catch_line:
+                              type: string
+                              nullable: true
+                            url:
+                              type: string
+                              format: uri
+                              nullable: true
+                      speakers:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                            shortname:
+                              type: string
+                            label:
+                              type: string
+                              description: The legislator's name as of the video's date (e.g., "Del. Jessica Anderson (D-Williamsburg)")
+                            starts:
+                              type: array
+                              description: When the legislator was identified as speaking, in seconds
+                              items:
+                                type: number
+                      transcript:
+                        type: array
+                        description: The transcript, in turns, one per speaker (or per minute, when the speaker is unknown)
+                        items:
+                          type: object
+                          properties:
+                            start:
+                              type: number
+                            speaker:
+                              type: object
+                              nullable: true
+                              properties:
+                                name:
+                                  type: string
+                                shortname:
+                                  type: string
+                            lines:
+                              type: array
+                              items:
+                                type: object
+                                properties:
+                                  start:
+                                    type: number
+                                  end:
+                                    type: number
+                                  text:
+                                    type: string
+                      captions:
+                        type: string
+                        format: uri
+                        nullable: true
+                        description: The transcript as WebVTT captions (/video/{slug}.vtt)
+                      minutes:
+                        type: string
+                        format: uri
+                        nullable: true
+                        description: The chamber's minutes for the video's date, on Richmond Sunlight
+                      same_day:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            slug:
+                              type: string
+                            url:
+                              type: string
+                              format: uri
+                            chamber:
+                              type: string
+                              enum: [house, senate]
+                            label:
+                              type: string
+                            status:
+                              type: string
+                              enum: [available, processing]
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /video/{slug}.vtt:
+    get:
+      tags: [Videos]
+      summary: Get a video's captions
+      description: Returns a video's transcript as WebVTT captions, timed to the video.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[bcdfghjkmnpqrstvwxz2-9]{4}$'
+      responses:
+        '200':
+          description: Captions found
+          content:
+            text/vtt:
+              schema:
+                type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /video/{id}.json:
+    get:
+      tags: [Videos]
+      deprecated: true
+      summary: Get a single video, by its numeric ID
+      description: >
+        Deprecated: video IDs may change. Use /video/{slug}.json, which has much more about each
+        video. This includes each video's slug, to find it there.
       parameters:
         - name: id
           in: path
@@ -369,6 +552,7 @@ paths:
                     enum: [house, senate]
                   committee:
                     type: string
+                    nullable: true
                   title:
                     type: string
                   path:
@@ -382,10 +566,16 @@ paths:
                     type: string
                   sponsor:
                     type: string
+                    nullable: true
                   has_transcript:
                     type: boolean
                   is_indexed:
                     type: boolean
+                  slug:
+                    type: string
+                  url:
+                    type: string
+                    format: uri
         '400':
           description: Invalid ID
           content:
@@ -399,7 +589,10 @@ paths:
     get:
       tags: [Videos]
       summary: List videos
-      description: Returns a list of all videos, optionally filtered by year.
+      description: >
+        Returns a list of videos, oldest first, optionally filtered by year, date, chamber, and
+        committee. With no filters, it lists every video. Filters that match no videos return an
+        empty list.
       parameters:
         - name: year
           in: query
@@ -408,6 +601,25 @@ paths:
             type: string
             pattern: '^\d{4}$'
           description: Filter videos to a specific 4-digit year
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Filter videos to a single date (YYYY-MM-DD)
+        - name: chamber
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [house, senate]
+        - name: committee
+          in: query
+          required: false
+          schema:
+            type: string
+          description: A committee's shortname (e.g., appropriations). Includes its subcommittees. Requires chamber.
       responses:
         '200':
           description: Videos found
@@ -416,37 +628,45 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    date:
-                      type: string
-                      format: date
-                    chamber:
-                      type: string
-                      enum: [house, senate]
-                    committee:
-                      type: string
-                    title:
-                      type: string
-                    path:
-                      type: string
-                      format: uri
-                    description:
-                      type: string
-                    width:
-                      type: string
-                    height:
-                      type: string
-                    sponsor:
-                      type: string
-                    has_transcript:
-                      type: boolean
-                    is_indexed:
-                      type: boolean
+                  allOf:
+                    - $ref: '#/components/schemas/VideoSummary'
+                    - type: object
+                      properties:
+                        id:
+                          type: string
+                        date:
+                          type: string
+                          format: date
+                        chamber:
+                          type: string
+                          enum: [house, senate]
+                        committee:
+                          type: string
+                          nullable: true
+                        title:
+                          type: string
+                        path:
+                          type: string
+                          format: uri
+                        description:
+                          type: string
+                        width:
+                          type: string
+                        height:
+                          type: string
+                        sponsor:
+                          type: string
+                          nullable: true
+                        has_transcript:
+                          type: boolean
+                        is_indexed:
+                          type: boolean
+                        poster:
+                          type: string
+                          format: uri
+                          nullable: true
         '400':
-          description: Invalid year
+          description: Invalid filter
           content:
             application/json:
               schema:
@@ -521,6 +741,60 @@ paths:
 
 components:
   schemas:
+    VideoMeetingCommittee:
+      type: object
+      nullable: true
+      properties:
+        name:
+          type: string
+        shortname:
+          type: string
+          nullable: true
+        url:
+          type: string
+          format: uri
+          nullable: true
+          description: The committee's page on Richmond Sunlight, if it has one
+    VideoSummary:
+      type: object
+      properties:
+        slug:
+          type: string
+          description: The video's permanent ID, four characters (e.g., k7qm)
+        url:
+          type: string
+          format: uri
+          description: The video's page on Richmond Sunlight
+        status:
+          type: string
+          enum: [available, processing]
+          description: Whether there's anything to play yet
+        date:
+          type: string
+          format: date
+        chamber:
+          type: string
+          enum: [house, senate]
+        meeting:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [floor, committee, subcommittee, unknown]
+              description: '"unknown" is a committee meeting whose committee hasn''t been identified'
+            label:
+              type: string
+              description: e.g., "House floor session" or "House Appropriations Committee"
+            committee:
+              $ref: '#/components/schemas/VideoMeetingCommittee'
+            parent_committee:
+              $ref: '#/components/schemas/VideoMeetingCommittee'
+        title:
+          type: string
+        length:
+          type: integer
+          nullable: true
+          description: In seconds
     ErrorResponse:
       type: object
       properties:

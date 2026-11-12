@@ -11,6 +11,9 @@ RewriteRule ^legislators.json$ legislators.php [QSA]
 RewriteRule ^legislator/([a-z0-9-]+).json$ legislator.php?shortname=$1 [QSA]
 RewriteRule ^vote/([0-9]{4})/([a-zA-Z0-9]{4,12}).json$ vote.php?year=$1&lis_id=$2 [QSA]
 RewriteRule ^video/([0-9]+).json$ video.php?id=$1 [QSA]
+# A video's slug always has a letter, so a numeric ID (above) never reaches these.
+RewriteRule ^video/([b-df-hjkmnp-tv-xz2-9]{4}).json$ video-slug.php?slug=$1 [QSA]
+RewriteRule ^video/([b-df-hjkmnp-tv-xz2-9]{4}).vtt$ video-captions.php?slug=$1 [QSA]
 RewriteRule ^videos.json$ videos.php [QSA]
 
 ErrorDocument 404 default
@@ -35,5 +38,10 @@ Header set Cache-Control "max-age=0, public" "expr=%{REQUEST_STATUS} == 200"
     Header set Cache-Control "max-age=3600, public" "expr=%{REQUEST_STATUS} == 200"
 </If>
 <If "%{THE_REQUEST} =~ m#^[A-Z]+ /1\.1/photosynthesis/#">
+    Header set Cache-Control "max-age=3600, public" "expr=%{REQUEST_STATUS} == 200"
+</If>
+
+# A video's record can change while it's processed (and after, if it's corrected): one hour.
+<If "%{THE_REQUEST} =~ m#^[A-Z]+ /1\.1/video/#">
     Header set Cache-Control "max-age=3600, public" "expr=%{REQUEST_STATUS} == 200"
 </If>

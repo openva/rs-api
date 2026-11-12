@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 // Single video JSON
 // PURPOSE: Accepts a video ID and emits JSON for that video.
+// DEPRECATED: Video IDs aren't meant to be relied on. Use /1.1/video/{slug}.json (video-slug.php),
+// which has much more about each video. This adds each video's slug and URL, to find it there.
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/functions.inc.php';
 require_once __DIR__ . '/functions.inc.php';
 
 header('Content-type: application/json');
+header('Deprecation: true');
 
 $db = api_db();
 
@@ -49,6 +52,8 @@ if ($result !== false && mysqli_num_rows($result) > 0) {
     if (isset($video['path']) && substr($video['path'], 0, 7) == '/video/') {
         $video['path'] = str_replace('/video/', 'https://video.richmondsunlight.com/', $video['path']);
     }
+
+    $video += Video::slug_and_url($id) ?? ['slug' => null, 'url' => null];
 
     $video['has_transcript'] = (bool) $video['has_transcript'];
     if ($video['has_transcript']) {

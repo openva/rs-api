@@ -129,6 +129,50 @@ check "/video/14569.json" ".chamber" '"senate"'
 check "/video/14569.json" ".title" '"Senate Session"'
 check "/video/14569.json" ".width" '"640"'
 
+# Video endpoint tests (single video, by slug). The videos are in richmondsunlight.com's fixtures
+# (deploy/mysql/video-minutes-fixtures.sql and video-page-fixtures.sql), and their slugs are set by
+# zz-video-slugs.sql: b334 is a House floor session, fcmk a committee meeting, fcmm a subcommittee
+# meeting, and fcmn a video that's still being processed, all on January 26, 2026.
+check "/video/15141.json" ".slug" '"b334"'
+check "/video/15141.json" ".url" '"https://www.richmondsunlight.com/video/b334/2026-01-26-house-floor/"'
+check "/video/b334.json" ".status" '"available"'
+check "/video/b334.json" ".meeting.type" '"floor"'
+check "/video/b334.json" ".meeting.label" '"House floor session"'
+check "/video/b334.json" ".url" '"https://www.richmondsunlight.com/video/b334/2026-01-26-house-floor/"'
+check "/video/b334.json" ".media.mp4 | test(\"^https://\")" 'true'
+check "/video/b334.json" ".bills | length" '14'
+check "/video/b334.json" ".bills[0].number" '"hb1384"'
+check "/video/b334.json" "any(.speakers[]; .label == \"Del. Jessica Anderson (D-Williamsburg)\")" 'true'
+check "/video/b334.json" ".transcript | length > 0" 'true'
+check "/video/b334.json" ".captions" '"https://api.richmondsunlight.com/1.1/video/b334.vtt"'
+check "/video/b334.json" ".minutes" '"https://www.richmondsunlight.com/minutes/house/2026/01/26/"'
+check "/video/b334.json" "[.same_day[].slug] | join(\",\")" '"fcmk,fcmm,fcmn"'
+check "/video/fcmk.json" ".meeting.type" '"committee"'
+check "/video/fcmk.json" ".meeting.committee.url" '"https://www.richmondsunlight.com/committee/house/appropriations/"'
+check "/video/fcmk.json" ".pending | join(\",\")" '"transcript"'
+check "/video/fcmm.json" ".meeting.type" '"subcommittee"'
+check "/video/fcmm.json" ".meeting.parent_committee.shortname" '"appropriations"'
+check "/video/fcmm.json" ".url" '"https://www.richmondsunlight.com/video/fcmm/2026-01-26-house-appropriations-capital-outlay/"'
+check "/video/fcmn.json" ".status" '"processing"'
+check "/video/fcmn.json" ".media.mp4" 'null'
+
+# Video list filters
+check "/videos.json?date=2026-01-26" "length" '4'
+check "/videos.json?date=2026-01-26&chamber=senate" "length" '0'
+check "/videos.json?chamber=house&committee=appropriations" "[.[].slug] | join(\",\")" '"fcmk,fcmm"'
+check "/videos.json?year=2026" "all(.[]; .date | startswith(\"2026\"))" 'true'
+check "/videos.json" "all(.[]; .slug | test(\"^[bcdfghjkmnpqrstvwxz2-9]{4}$\"))" 'true'
+
+# Video captions
+captions_url="${API_BASE}/video/b334.vtt"
+captions="$(curl --silent --fail "$captions_url" || true)"
+if [[ "$captions" == WEBVTT* ]]; then
+    echo "✅: $captions_url is WebVTT"
+else
+    echo "❌: $captions_url is not WebVTT"
+    ERRORED=true
+fi
+
 # Error handling tests - expect 404 for invalid inputs
 check_404() {
     local path="$1"
@@ -192,6 +236,15 @@ check_404 "/photosynthesis/pwt01.json"
 check "/tag-suggest?term=cell" "type" '"array"'
 check "/tag-suggest?term=cell" "length > 0" 'true'
 check_status "/vote/2025/999999.json" 404
+
+# Videos: a slug that doesn't exist, malformed slugs, a video with no captions, and bad filters
+check_404 "/video/bbbb.json"
+check_404 "/video/abcd.json"
+check_404 "/video/b33.json"
+check_404 "/video/fcmn.vtt"
+check_status "/videos.json?committee=appropriations" 400
+check_status "/videos.json?date=2026-02-30" 400
+check_status "/videos.json?chamber=assembly" 400
 
 # =============================================================================
 # Field value validation tests

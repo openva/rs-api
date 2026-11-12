@@ -280,8 +280,8 @@ How long a response may be cached is set in Apache, in [htdocs/1.1/.htaccess](ht
 | Response | `Cache-Control` |
 |---|---|
 | A bill from a past session (`/1.1/bill/{year}/...`) | `max-age=2635200, public` (30.5 days) |
-| A bill from the current session, and a Photosynthesis portfolio | `max-age=3600, public` (one hour) |
-| Everything else (lists, legislators, votes, video, ...) | `max-age=0, public` |
+| A bill from the current session, a Photosynthesis portfolio, and a video (`/1.1/video/...`) | `max-age=3600, public` (one hour) |
+| Everything else (lists, legislators, votes, ...) | `max-age=0, public` |
 | Anything other than a 200 (errors) | none |
 
 "The current session" is taken to be the current calendar year (Apache's `%{TIME_YEAR}`), since the session's year is in the bill's URL and Apache doesn't know `SESSION_ID`. To change a lifetime, edit the `Header set` lines. Because they use `<If>` and `expr=`, they need Apache 2.4.10 or later, and `AllowOverride` that permits them (a directive that isn't allowed makes every request a 500).
