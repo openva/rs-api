@@ -145,7 +145,8 @@ check "/video/b334.json" ".bills[0].number" '"hb1384"'
 check "/video/b334.json" "any(.speakers[]; .label == \"Del. Jessica Anderson (D-Williamsburg)\")" 'true'
 check "/video/b334.json" ".transcript | length > 0" 'true'
 check "/video/b334.json" ".captions" '"https://api.richmondsunlight.com/1.1/video/b334.vtt"'
-check "/video/b334.json" ".minutes" '"https://www.richmondsunlight.com/minutes/house/2026/01/26/"'
+check "/video/b334.json" ".day" '"https://www.richmondsunlight.com/day/2026-01-26/"'
+check "/video/b334.json" ".minutes" '"https://www.richmondsunlight.com/day/2026-01-26/#minutes-house"'
 check "/video/b334.json" "[.same_day[].slug] | join(\",\")" '"fcmk,fcmm,fcmn"'
 check "/video/fcmk.json" ".meeting.type" '"committee"'
 check "/video/fcmk.json" ".meeting.committee.url" '"https://www.richmondsunlight.com/committee/house/appropriations/"'
@@ -154,6 +155,31 @@ check "/video/fcmm.json" ".meeting.type" '"subcommittee"'
 check "/video/fcmm.json" ".meeting.parent_committee.shortname" '"appropriations"'
 check "/video/fcmm.json" ".url" '"https://www.richmondsunlight.com/video/fcmm/2026-01-26-house-appropriations-capital-outlay/"'
 check "/video/fcmn.json" ".status" '"processing"'
+
+# Day endpoint tests. The day's actions, dockets, and meetings are in richmondsunlight.com's
+# deploy/mysql/day-page-fixtures.sql, and its videos and minutes in the fixtures named above.
+check "/day/2026-01-26.json" ".url" '"https://www.richmondsunlight.com/day/2026-01-26/"'
+check "/day/2026-01-26.json" ".in_session" 'true'
+check "/day/2026-01-26.json" "[.chambers[].chamber] | join(\",\")" '"house,senate"'
+check "/day/2026-01-26.json" ".chambers[0].videos[0].slug" '"b334"'
+check "/day/2026-01-26.json" ".chambers[0].minutes | startswith(\"Called to order\")" 'true'
+check "/day/2026-01-26.json" "[.chambers[0].actions[] | select(.bill.number == \"hb176\")][0].vote.url" '"https://www.richmondsunlight.com/bill/2026/hb176/hv0126/"'
+check "/day/2026-01-26.json" "[.chambers[0].actions[] | select(.bill.number == \"hb341\")][0] | [.type, .vote.close]" '[
+  "failed",
+  true
+]'
+check "/day/2026-01-26.json" "any(.chambers[].actions[]; .bill.number == \"hb414\")" 'false'
+check "/day/2026-01-26.json" "[.meetings[] | select(.label == \"House Appropriations: Capital Outlay Subcommittee\")][0] | [.time, .actions[0].bill.number, .docket[0].number]" '[
+  "07:30",
+  "hb206",
+  "hb210"
+]'
+check "/day/2026-01-26.json" "[.meetings[] | select(.label == \"House Rules Committee\")][0].actions[0].vote.voice" 'true'
+check "/day/2026-01-26.json" "any(.meetings[]; .label | test(\"Caucus\"))" 'false'
+check "/day/2026-01-26.json" ".coming_up" 'null'
+check "/day/latest.json" ".coming_up.meetings[0].label" '"Joint Subcommittee on Day Page Fixtures"'
+check "/days.json?year=2026" "[.[] | select(.date == \"2026-01-26\")][0].floor | join(\",\")" '"house,senate"'
+check "/days.json?year=2026" "any(.[]; .date == \"2026-01-25\")" 'false'
 check "/video/fcmn.json" ".media.mp4" 'null'
 
 # Video list filters
@@ -245,6 +271,13 @@ check_404 "/video/fcmn.vtt"
 check_status "/videos.json?committee=appropriations" 400
 check_status "/videos.json?date=2026-02-30" 400
 check_status "/videos.json?chamber=assembly" 400
+
+# Days: a day with nothing recorded, one that hasn't happened, one that doesn't exist, and a
+# missing year
+check_404 "/day/2026-01-25.json"
+check_404 "/day/2098-01-05.json"
+check_404 "/day/2026-02-30.json"
+check_status "/days.json" 400
 
 # =============================================================================
 # Field value validation tests
