@@ -177,6 +177,20 @@ check "/day/2026-01-26.json" "[.meetings[] | select(.label == \"House Appropriat
 check "/day/2026-01-26.json" "[.meetings[] | select(.label == \"House Rules Committee\")][0].actions[0].vote.voice" 'true'
 check "/day/2026-01-26.json" "any(.meetings[]; .label | test(\"Caucus\"))" 'false'
 check "/day/2026-01-26.json" ".coming_up" 'null'
+# Its highlights are chosen when the Docker environment is set up (richmondsunlight.com's
+# deploy/day-highlights.php). HB 341 failed on a close vote, and was in the news.
+check "/day/2026-01-26.json" ".highlights[0] | [.bill.number, .action.type, (.reasons | index(\"Close vote, 45–52\") != null)]" '[
+  "hb341",
+  "failed",
+  true
+]'
+check "/day/2026-01-26.json" ".highlights[0].clip.url | startswith(\"https://www.richmondsunlight.com/video/b334/?t=\")" 'true'
+check "/day/2026-01-26.json" "[.news[] | select(any(.bills[]; .number == \"hb341\"))][0].title" '"House narrowly defeats plastic bag tax bill"'
+check "/day/2026-01-26.json" ".site_activity | [.comments[0].bill.number, .polls[0].yes, .most_viewed[0].viewers]" '[
+  "hb341",
+  7,
+  3
+]'
 check "/day/latest.json" ".coming_up.meetings[0].label" '"Joint Subcommittee on Day Page Fixtures"'
 check "/days.json?year=2026" "[.[] | select(.date == \"2026-01-26\")][0].floor | join(\",\")" '"house,senate"'
 check "/days.json?year=2026" "any(.[]; .date == \"2026-01-25\")" 'false'

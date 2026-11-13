@@ -736,9 +736,12 @@ paths:
         Returns everything that the General Assembly did on a day: each chamber's floor session (its
         videos, its minutes, and its actions on bills that weren't in a committee), and each
         committee, subcommittee, or other meeting (its time and place, its videos, its actions on
-        bills, and the rest of its docket). On the most recent day, it also returns the next day
-        with anything scheduled. Outside of a session, a day has only meetings. A day's record fills
-        in over a day or two.
+        bills, and the rest of its docket). It also returns the day's highlights (the bills most
+        likely to interest a reader, chosen automatically, each with the reasons it was chosen), news
+        stories about the day's bills, and what people did with them on Richmond Sunlight. On the
+        most recent day, it also returns the next day with anything scheduled. Outside of a session,
+        a day has only meetings, and no highlights. A day's record fills in over a day or two, and its
+        highlights can change for two weeks.
       parameters:
         - name: date
           in: path
@@ -799,6 +802,70 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/DayMeeting'
+                  highlights:
+                    type: array
+                    description: Up to ten of the day's bills, best first
+                    items:
+                      $ref: '#/components/schemas/DayHighlight'
+                  highlights_updated:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    description: When the day's highlights were last chosen
+                  news:
+                    type: array
+                    description: >
+                      News stories about the day's bills, from two days before the day to three
+                      days after, newest first
+                    items:
+                      $ref: '#/components/schemas/DayNewsStory'
+                  site_activity:
+                    type: object
+                    properties:
+                      comments:
+                        type: array
+                        description: Comments posted on the day about its bills, newest first
+                        items:
+                          type: object
+                          properties:
+                            bill:
+                              $ref: '#/components/schemas/DayBill'
+                            name:
+                              type: string
+                            excerpt:
+                              type: string
+                            url:
+                              type: string
+                              format: uri
+                            date:
+                              type: string
+                              format: date-time
+                      polls:
+                        type: array
+                        description: >
+                          The day's bills with at least ten votes in Richmond Sunlight's polls, as of
+                          the end of the day
+                        items:
+                          type: object
+                          properties:
+                            bill:
+                              $ref: '#/components/schemas/DayBill'
+                            yes:
+                              type: integer
+                            no:
+                              type: integer
+                      most_viewed:
+                        type: array
+                        description: >
+                          The year's bills that the most people looked at on Richmond Sunlight that
+                          day, whether or not anything was done to them
+                        items:
+                          type: object
+                          properties:
+                            bill:
+                              $ref: '#/components/schemas/DayBill'
+                            viewers:
+                              type: integer
                   coming_up:
                     type: object
                     nullable: true
@@ -1016,6 +1083,79 @@ components:
               format: uri
               nullable: true
               description: The roll call, on Richmond Sunlight
+    DayHighlight:
+      type: object
+      properties:
+        position:
+          type: integer
+        bill:
+          $ref: '#/components/schemas/DayBill'
+        chamber:
+          type: string
+          nullable: true
+          enum: [house, senate]
+        score:
+          type: number
+        action:
+          type: object
+          description: The most important thing done to the bill that day
+          properties:
+            text:
+              type: string
+            type:
+              type: string
+            outcome:
+              type: string
+              nullable: true
+            chamber:
+              type: string
+              nullable: true
+            where:
+              type: string
+              nullable: true
+              description: The meeting's label, or null for the floor
+            place:
+              type: string
+              enum: [floor, committee, subcommittee, other]
+            vote:
+              type: object
+              nullable: true
+        reasons:
+          type: array
+          description: Why it was chosen, for readers (e.g., "Close vote, 45–52", "2 news stories")
+          items:
+            type: string
+        clip:
+          type: object
+          nullable: true
+          description: The longest discussion of the bill on the day's video
+          properties:
+            url:
+              type: string
+              format: uri
+            start:
+              type: integer
+            duration:
+              type: integer
+            label:
+              type: string
+    DayNewsStory:
+      type: object
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+          format: uri
+        publication:
+          type: string
+        date:
+          type: string
+          format: date
+        bills:
+          type: array
+          items:
+            $ref: '#/components/schemas/DayBill'
     DayVideo:
       type: object
       properties:

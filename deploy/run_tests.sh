@@ -19,4 +19,6 @@ if [ ! -d tests ]; then
     exit 0
 fi
 
-cd tests || exit
+# Validate openapi.yaml, and run the endpoint tests. (Its exit status is this script's, so that a
+# failure fails the build.)
+exec bash tests/run-tests.sh
