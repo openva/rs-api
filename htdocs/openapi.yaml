@@ -819,6 +819,22 @@ paths:
                       days after, newest first
                     items:
                       $ref: '#/components/schemas/DayNewsStory'
+                  brief:
+                    type: object
+                    nullable: true
+                    description: >
+                      A few sentences about the day, written by a language model from the day's
+                      record alone, the morning after, and checked against that record (every bill
+                      and number in it). Null if the day has none that passed those checks.
+                    properties:
+                      text:
+                        type: string
+                        description: Plain text
+                      model:
+                        type: string
+                      written:
+                        type: string
+                        format: date-time
                   site_activity:
                     type: object
                     properties:
