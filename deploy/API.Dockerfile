@@ -1,4 +1,6 @@
-FROM php:8-apache
+# PHP 8.4, like the web image and CI. (A floating "8" tag picked up PHP 8.6, whose image
+# has no pecl.)
+FROM php:8.4-apache
 
 RUN docker-php-ext-install mysqli pdo pdo_mysql && a2enmod rewrite && a2enmod expires && a2enmod headers
 
