@@ -94,14 +94,21 @@ paths:
       tags: [Code]
       summary: Get video clips by code section
       description: |
-        Returns video clips from legislative sessions discussing a specific code section.
+        Returns video clips of the legislature discussing bills that cite a specific code section,
+        oldest first (by the video's date, then the clip's start). A clip that falls entirely within
+        another clip in the same video is left out, so each discussion is listed once. Only clips in
+        videos that have a page on Richmond Sunlight (that is, a slug) are included.
+
+        Link to a clip with `url`, which opens the video's page at the moment the discussion starts.
         Available in v1.1 only.
       parameters:
         - name: section
           in: path
           required: true
+          description: A section of the Code of Virginia (e.g., 22.1-277)
           schema:
             type: string
+            pattern: '^[.0-9a-z-]{3,20}$'
       responses:
         '200':
           description: Video clips found
@@ -111,27 +118,72 @@ paths:
                 type: array
                 items:
                   type: object
+                  required: [bill_number, year, bill_url, slug, url, start, end, poster]
                   properties:
                     bill_number:
                       type: string
+                      description: The bill's number, lowercase (e.g., sb738)
                     year:
                       type: string
+                      description: The year of the bill's session
+                    bill_url:
+                      type: string
+                      format: uri
+                      description: The bill's page on Richmond Sunlight
+                    catch_line:
+                      type: string
+                      nullable: true
+                      description: The bill's catch line, as stored (it may contain HTML entities, such as `&amp;`)
                     date:
                       type: string
                       format: date
+                      description: The date of the video
                     chamber:
                       type: string
                       enum: [house, senate]
-                    time_start:
+                    slug:
                       type: string
-                    time_end:
-                      type: string
-                    screenshot:
+                      pattern: '^[bcdfghjkmnpqrstvwxz2-9]{4}$'
+                      description: The video's permanent ID (see /video/{slug}.json)
+                    url:
                       type: string
                       format: uri
+                      description: >
+                        The video's page on Richmond Sunlight, starting at the clip, e.g.,
+                        https://www.richmondsunlight.com/video/k7qm/?t=7298. The page redirects to its
+                        full address, keeping the start time.
+                    start:
+                      type: integer
+                      description: Where the clip starts, in seconds from the start of the video
+                    end:
+                      type: integer
+                      description: Where the clip ends, in seconds from the start of the video
+                    poster:
+                      type: string
+                      format: uri
+                      nullable: true
+                      description: A picture of the clip, or null if there isn't one
+                    time_start:
+                      type: string
+                      deprecated: true
+                      description: Deprecated; use start. Where the clip starts, as HH:MM:SS.
+                    time_end:
+                      type: string
+                      deprecated: true
+                      description: Deprecated; use end. Where the clip ends, as HH:MM:SS.
+                    screenshot:
+                      type: string
+                      deprecated: true
+                      description: >
+                        Deprecated; use poster. The same picture as poster, or an empty string if
+                        there isn't one.
                     video_url:
                       type: string
                       format: uri
+                      deprecated: true
+                      description: >
+                        Deprecated; use url. The video file itself, which may move. Link to the
+                        video's page instead.
         '400':
           description: Invalid section format
           content:
@@ -139,7 +191,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: >
+            No video clips address this section (including when no bills cite it). The error's
+            message is "No Video Found".
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /bills/{year}.json:
     get:

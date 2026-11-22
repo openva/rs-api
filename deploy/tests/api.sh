@@ -89,6 +89,27 @@ check "/bysection/22.1-277.json" ".[0] | has(\"url\")" 'true'
 check "/bysection/22.1-277.json" "any(.[]; .number == \"sb738\")" 'true'
 check "/bysection/22.1-277.json" "all(.[]; .number | test(\"^[a-z]+[0-9]+$\"))" 'true'
 
+# Code section video: SB738 (2025) cites 22.1-277, and has three clips in video_clips (from
+# richmondsunlight.com's video-bill-fixtures.sql). One falls within another, so it's left out.
+check "/section-video/22.1-277.json" "type" '"array"'
+check "/section-video/22.1-277.json" "length" '2'
+check "/section-video/22.1-277.json" "all(.[]; .slug | test(\"^[bcdfghjkmnpqrstvwxz2-9]{4}$\"))" 'true'
+check "/section-video/22.1-277.json" "all(.[]; .url | startswith(\"https://www.richmondsunlight.com/video/\"))" 'true'
+check "/section-video/22.1-277.json" "all(.[]; .url | contains(\"?t=\"))" 'true'
+check "/section-video/22.1-277.json" "all(.[]; (.start | type) == \"number\" and (.end | type) == \"number\" and .end > .start)" 'true'
+check "/section-video/22.1-277.json" "all(.[]; has(\"file_id\") | not)" 'true'
+check "/section-video/22.1-277.json" ".[0].slug" '"bkdz"'
+check "/section-video/22.1-277.json" ".[0].url" '"https://www.richmondsunlight.com/video/bkdz/?t=7298"'
+check "/section-video/22.1-277.json" ".[0].start" '7298'
+check "/section-video/22.1-277.json" ".[0].end" '7394'
+check "/section-video/22.1-277.json" ".[0].bill_number" '"sb738"'
+check "/section-video/22.1-277.json" ".[0].catch_line | contains(\"cell phone\")" 'true'
+check "/section-video/22.1-277.json" ".[0].poster" '"https://video.richmondsunlight.com/senate/floor/20250402/00007306.jpg"'
+check "/section-video/22.1-277.json" ".[0].screenshot == .[0].poster" 'true'
+check "/section-video/22.1-277.json" ".[0].time_start" '"02:01:38"'
+check "/section-video/22.1-277.json" ".[1].url" '"https://www.richmondsunlight.com/video/bkdd/?t=799"'
+check "/section-video/22.1-277.json" ".[1].poster" 'null'
+
 # Tag suggest endpoint tests
 # Note: The htaccess rewrite has been fixed, but Tags::get_suggestions() returns false
 # for the test data.
@@ -272,7 +293,8 @@ check_status "/bysection/invalid!section.json" 400
 check_404 "/bysection/99.9-999.json"
 
 # Additional endpoints should return errors for missing data
-check_404 "/section-video/22.1-277.json"
+check_404 "/section-video/3.2-6545.1.json"
+check_status "/section-video/invalid!section.json" 400
 check_404 "/photosynthesis/pwt01.json"
 check "/tag-suggest?term=cell" "type" '"array"'
 check "/tag-suggest?term=cell" "length > 0" 'true'
