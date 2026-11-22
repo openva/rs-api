@@ -95,9 +95,12 @@ paths:
       summary: Get video clips by code section
       description: |
         Returns video clips of the legislature discussing bills that cite a specific code section,
-        oldest first (by the video's date, then the clip's start). A clip that falls entirely within
-        another clip in the same video is left out, so each discussion is listed once. Only clips in
-        videos that have a page on Richmond Sunlight (that is, a slug) are included.
+        oldest first (by the video's date, then the clip's start). These are the clips that each
+        bill's page on Richmond Sunlight plays: from the bill's chyrons in the video (padded by a
+        few seconds on each side), or, for older video without them, from clips recorded by hand.
+        A clip that falls entirely within another clip in the same video is left out, so each
+        discussion is listed once. Only clips in videos that have a page on Richmond Sunlight (that
+        is, a slug) are included.
 
         Link to a clip with `url`, which opens the video's page at the moment the discussion starts.
         Available in v1.1 only.

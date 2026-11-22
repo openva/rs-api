@@ -89,26 +89,27 @@ check "/bysection/22.1-277.json" ".[0] | has(\"url\")" 'true'
 check "/bysection/22.1-277.json" "any(.[]; .number == \"sb738\")" 'true'
 check "/bysection/22.1-277.json" "all(.[]; .number | test(\"^[a-z]+[0-9]+$\"))" 'true'
 
-# Code section video: SB738 (2025) cites 22.1-277, and has three clips in video_clips (from
-# richmondsunlight.com's video-bill-fixtures.sql). One falls within another, so it's left out.
+# Code section video: SB738 (2025) cites 22.1-277. Its clips are the bill page's, worked out from its
+# chyrons in video_index (from richmondsunlight.com's video-bill-fixtures.sql): one on the Senate
+# floor, and one in a subcommittee, each padded by 10 seconds.
 check "/section-video/22.1-277.json" "type" '"array"'
 check "/section-video/22.1-277.json" "length" '2'
 check "/section-video/22.1-277.json" "all(.[]; .slug | test(\"^[bcdfghjkmnpqrstvwxz2-9]{4}$\"))" 'true'
 check "/section-video/22.1-277.json" "all(.[]; .url | startswith(\"https://www.richmondsunlight.com/video/\"))" 'true'
 check "/section-video/22.1-277.json" "all(.[]; .url | contains(\"?t=\"))" 'true'
 check "/section-video/22.1-277.json" "all(.[]; (.start | type) == \"number\" and (.end | type) == \"number\" and .end > .start)" 'true'
+check "/section-video/22.1-277.json" "all(.[]; .poster == null or (.poster | startswith(\"https://video.richmondsunlight.com/\")))" 'true'
 check "/section-video/22.1-277.json" "all(.[]; has(\"file_id\") | not)" 'true'
+check "/section-video/22.1-277.json" "[.[].date] == ([.[].date] | sort)" 'true'
 check "/section-video/22.1-277.json" ".[0].slug" '"bkdz"'
-check "/section-video/22.1-277.json" ".[0].url" '"https://www.richmondsunlight.com/video/bkdz/?t=7298"'
-check "/section-video/22.1-277.json" ".[0].start" '7298'
-check "/section-video/22.1-277.json" ".[0].end" '7394'
+check "/section-video/22.1-277.json" ".[0].url" '"https://www.richmondsunlight.com/video/bkdz/?t=7295"'
+check "/section-video/22.1-277.json" ".[0].start" '7295'
+check "/section-video/22.1-277.json" ".[0].end" '7405'
+check "/section-video/22.1-277.json" ".[0].time_start" '"02:01:35"'
 check "/section-video/22.1-277.json" ".[0].bill_number" '"sb738"'
 check "/section-video/22.1-277.json" ".[0].catch_line | contains(\"cell phone\")" 'true'
-check "/section-video/22.1-277.json" ".[0].poster" '"https://video.richmondsunlight.com/senate/floor/20250402/00007306.jpg"'
 check "/section-video/22.1-277.json" ".[0].screenshot == .[0].poster" 'true'
-check "/section-video/22.1-277.json" ".[0].time_start" '"02:01:38"'
-check "/section-video/22.1-277.json" ".[1].url" '"https://www.richmondsunlight.com/video/bkdd/?t=799"'
-check "/section-video/22.1-277.json" ".[1].poster" 'null'
+check "/section-video/22.1-277.json" ".[1].url" '"https://www.richmondsunlight.com/video/bkdd/?t=806"'
 
 # Tag suggest endpoint tests
 # Note: The htaccess rewrite has been fixed, but Tags::get_suggestions() returns false
