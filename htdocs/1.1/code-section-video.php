@@ -7,7 +7,8 @@ declare(strict_types=1);
 // clips of the legislature discussing bills that cite it, each linked to the moment on its video's
 // page on Richmond Sunlight.
 //
-// Depends on time_to_seconds(), from includes/functions.inc.php (copied from richmondsunlight.com).
+// Depends on time_to_seconds() and Video::screenshot_url(), in the includes copied from
+// richmondsunlight.com.
 
 // Includes
 require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/settings.inc.php';
@@ -74,7 +75,7 @@ while ($row = $result->fetch_assoc()) {
     $slug = (string) $row['slug'];
     $start = (int) time_to_seconds($row['time_start']);
     $end = (int) time_to_seconds($row['time_end']);
-    $poster = api_screenshot_url((string) $row['screenshot']);
+    $poster = Video::screenshot_url((string) $row['screenshot']);
 
     $video_url = (string) $row['video_url'];
     if (strpos($video_url, 'archive.org') === false) {

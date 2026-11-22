@@ -280,7 +280,7 @@ How long a response may be cached is set in Apache, in [htdocs/1.1/.htaccess](ht
 | Response | `Cache-Control` |
 |---|---|
 | A bill from a past session (`/1.1/bill/{year}/...`) | `max-age=2635200, public` (30.5 days) |
-| A bill from the current session, a Photosynthesis portfolio, and a video (`/1.1/video/...`) | `max-age=3600, public` (one hour) |
+| A bill from the current session, a Photosynthesis portfolio, a video (`/1.1/video/...`), and a section's video clips (`/1.1/section-video/...`) | `max-age=3600, public` (one hour) |
 | Everything else (lists, legislators, votes, ...) | `max-age=0, public` |
 | Anything other than a 200 (errors) | none |
 
