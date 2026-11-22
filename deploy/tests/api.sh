@@ -439,6 +439,10 @@ else
 fi
 check_cache_control "/bill/2024/hb1.json" "max-age=2635200, public"
 
+# A section's video clips are cached for an hour, like a video. A section with no clips isn't.
+check_cache_control "/section-video/22.1-277.json" "max-age=3600, public"
+check_cache_control "/section-video/3.2-6545.1.json" "none"
+
 # Everything else isn't cached.
 check_cache_control "/legislators.json?year=2025" "max-age=0, public"
 check_cache_control "/bills/2025.json" "max-age=0, public"

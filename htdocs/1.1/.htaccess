@@ -43,8 +43,9 @@ Header set Cache-Control "max-age=0, public" "expr=%{REQUEST_STATUS} == 200"
     Header set Cache-Control "max-age=3600, public" "expr=%{REQUEST_STATUS} == 200"
 </If>
 
-# A video's record can change while it's processed (and after, if it's corrected): one hour.
-<If "%{THE_REQUEST} =~ m#^[A-Z]+ /1\.1/video/#">
+# A video's record can change while it's processed (and after, if it's corrected), as can the clips of
+# the bills that cite a section of the Code: one hour.
+<If "%{THE_REQUEST} =~ m#^[A-Z]+ /1\.1/(section-)?video/#">
     Header set Cache-Control "max-age=3600, public" "expr=%{REQUEST_STATUS} == 200"
 </If>
 
