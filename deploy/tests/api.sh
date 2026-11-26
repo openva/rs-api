@@ -207,6 +207,12 @@ check "/day/2026-01-26.json" ".highlights[0] | [.bill.number, .action.type, (.re
   true
 ]'
 check "/day/2026-01-26.json" ".highlights[0].clip.url | startswith(\"https://www.richmondsunlight.com/video/b334/?t=\")" 'true'
+check "/day/2026-01-26.json" ".highlights[0].clip.captions" '"https://www.richmondsunlight.com/video/b334/captions.vtt"'
+check "/day/2026-01-26.json" ".highlights[0].clip.mp4 | endswith(\".mp4\")" 'true'
+check "/day/2026-01-26.json" ".highlights[0].clip | [.segments[0].start == .start, (.segments | length) > 0]" '[
+  true,
+  true
+]'
 check "/day/2026-01-26.json" "[.news[] | select(any(.bills[]; .number == \"hb341\"))][0].title" '"House narrowly defeats plastic bag tax bill"'
 check "/day/2026-01-26.json" ".brief.text | startswith(\"The House narrowly defeated HB 341\")" 'true'
 check "/day/2026-01-26.json" ".site_activity | [.comments[0].bill.number, .polls[0].yes, .most_viewed[0].viewers]" '[

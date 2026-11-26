@@ -1212,10 +1212,36 @@ components:
               format: uri
             start:
               type: integer
+              description: Seconds into the video, 3 seconds before the bill's first chyron
             duration:
               type: integer
             label:
               type: string
+            mp4:
+              type: string
+              format: uri
+              nullable: true
+              description: The video's file, or null if it can't be played on Richmond Sunlight (e.g., it's only on YouTube)
+            captions:
+              type: string
+              format: uri
+              nullable: true
+              description: The video's captions (WebVTT), made from its transcript, or null if it has none
+            segments:
+              type: array
+              description: >-
+                The parts of the clip that the day's highlight reel plays: its first 30 seconds,
+                then 45 seconds from when another legislator first appears on screen, or, if
+                nobody else does, its first 45 seconds. Never past the clip's end.
+              items:
+                type: object
+                properties:
+                  start:
+                    type: integer
+                    description: Seconds into the video
+                  end:
+                    type: integer
+                    description: Seconds into the video
     DayNewsStory:
       type: object
       properties:
