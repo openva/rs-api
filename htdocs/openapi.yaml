@@ -1031,6 +1031,117 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /photosynthesis/{hash}.json:
+    get:
+      tags: [Photosynthesis]
+      summary: Get a public Photosynthesis portfolio
+      description: >-
+        A public portfolio of bills kept by a Richmond Sunlight user, with its bills of the current
+        session. A smart portfolio fills itself with every bill matching its criteria (a tag, a
+        patron, and a committee, any of which may be set); bills its owner has hidden from it aren't
+        listed. An empty portfolio has no bills. A private portfolio isn't found.
+      parameters:
+        - name: hash
+          in: path
+          required: true
+          description: The portfolio's ID, five lowercase letters and numbers
+          schema:
+            type: string
+            pattern: '^[a-z0-9]{5}$'
+      responses:
+        '200':
+          description: Portfolio found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hash:
+                    type: string
+                  name:
+                    type: string
+                  notes:
+                    type: string
+                    nullable: true
+                    description: The owner's description of the portfolio, as plain text
+                  type:
+                    type: string
+                    enum: [normal, smart]
+                  criteria:
+                    type: object
+                    nullable: true
+                    description: A smart portfolio's criteria (null for a normal portfolio). A bill matches if it matches all that are set.
+                    properties:
+                      tag:
+                        type: string
+                        nullable: true
+                      patron:
+                        type: object
+                        nullable: true
+                        properties:
+                          shortname:
+                            type: string
+                          name:
+                            type: string
+                      committee:
+                        type: object
+                        nullable: true
+                        properties:
+                          shortname:
+                            type: string
+                          chamber:
+                            type: string
+                            enum: [house, senate]
+                          name:
+                            type: string
+                      description:
+                        type: string
+                        description: The criteria in words (e.g., "Bills tagged education")
+                  owner:
+                    type: string
+                    description: The owner's organization or, if none, their first name and last initial
+                  organization:
+                    type: string
+                    nullable: true
+                  url:
+                    type: string
+                    format: uri
+                    nullable: true
+                    description: The owner's website
+                  page:
+                    type: string
+                    format: uri
+                    description: The portfolio's page on Richmond Sunlight
+                  bills:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        number:
+                          type: string
+                          description: Lowercase (e.g., hb41)
+                        catch_line:
+                          type: string
+                        year:
+                          type: string
+                        notes:
+                          type: string
+                          nullable: true
+                          description: The owner's notes on the bill, as plain text
+                        status:
+                          type: string
+                          nullable: true
+                          description: The bill's latest action
+                        date:
+                          type: string
+                          nullable: true
+                          description: When the latest action was taken
+                        url:
+                          type: string
+                          format: uri
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   schemas:
     VideoMeetingCommittee:
@@ -1384,3 +1495,5 @@ tags:
     description: Operations about videos
   - name: Days
     description: What the General Assembly did each day
+  - name: Photosynthesis
+    description: Users' public portfolios of bills

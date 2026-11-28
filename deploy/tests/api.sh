@@ -302,7 +302,21 @@ check_404 "/bysection/99.9-999.json"
 # Additional endpoints should return errors for missing data
 check_404 "/section-video/3.2-6545.1.json"
 check_status "/section-video/invalid!section.json" 400
+# Photosynthesis portfolios (deploy/mysql/test-users.sql in richmondsunlight.com): a public
+# portfolio, a public smart portfolio with its criteria, an empty one, and a private one (not found)
+check "/photosynthesis/pwtp1.json" ".name" '"Public Test Portfolio"'
+check "/photosynthesis/pwtp1.json" ".type" '"normal"'
+check "/photosynthesis/pwtp1.json" ".criteria" 'null'
+check "/photosynthesis/pwtp1.json" ".owner" '"Test Organization"'
+check "/photosynthesis/pwtp1.json" "any(.bills[]; .number == \"hb2049\")" 'true'
+check "/photosynthesis/pwts1.json" ".type" '"smart"'
+check "/photosynthesis/pwts1.json" ".criteria.tag" '"education"'
+check "/photosynthesis/pwts1.json" ".criteria.patron" 'null'
+check "/photosynthesis/pwts1.json" ".criteria.description" '"Bills tagged education"'
+check "/photosynthesis/pwts1.json" "any(.bills[]; .number == \"hb41\")" 'true'
+check "/photosynthesis/pwte1.json" ".bills" '[]'
 check_404 "/photosynthesis/pwt01.json"
+check_404 "/photosynthesis/zzzzz.json"
 check "/tag-suggest?term=cell" "type" '"array"'
 check "/tag-suggest?term=cell" "length > 0" 'true'
 check_status "/vote/2025/999999.json" 404
